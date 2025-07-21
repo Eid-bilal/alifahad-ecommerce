@@ -1,0 +1,2 @@
+a =" bilal"
+print(a)
