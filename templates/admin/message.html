@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/jvectormap/jquery-jvectormap.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/flag-icon-css/css/flag-icon.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.theme.default.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+    <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
+</head>
+<body>
+<div class="container-scroller">
+    {% include 'admin/sidebar.html' %}
+    <div class="container-fluid page-body-wrapper">
+        {% include 'admin/navbar.html' %}
+        
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <!-- Statistics Section -->
+                <div class="row">
+                    <div class="col-md-4 stretch-card grid-margin">
+                        <div class="card bg-gradient-primary text-white text-center">
+                            <div class="card-body">
+                                <h3 class="mb-2">Total Complaints</h3>
+                                <h2 class="font-weight-bold">{{messages_count}}</h2> <!-- Replace with actual data -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 stretch-card grid-margin">
+                        <div class="card bg-gradient-success text-white text-center">
+                            <div class="card-body">
+                                <h3 class="mb-2">Solved Complaints</h3>
+                                <h2 class="font-weight-bold">{{success_message_count}}</h2> <!-- Replace with actual data -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 stretch-card grid-margin">
+                        <div class="card bg-gradient-warning text-white text-center">
+                            <div class="card-body">
+                                <h3 class="mb-2">Pending Complaints</h3>
+                                <h2 class="font-weight-bold">{{pending_message_count}}</h2> <!-- Replace with actual data -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Complaints Table -->
+                <div class="row">
+                    <div class="col-12 grid-margin">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">User Complaints</h4>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>CompalintId</th>
+                                                <th>User Name</th>
+                                                <th>Email</th>
+                                                <th>Subject</th>
+                                                <th>Message</th>
+                                                <th>Status(click to change status)</th>
+                
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for message in message %}
+                                            <tr>
+                                                <td>{{message.id}}</td>
+                                                <td>{{message.name}}</td>
+                                                <td>{{message.email}}</td>
+                                                <td>{{message.subject}}</td>
+                                                <td>{{message.message}}</td>
+                                                <td>
+                                                    {% if message.status == "pending" %}
+                                                        <a href="{% url 'change_message_status' message.id %}" class="btn btn-outline-danger btn-sm" style="padding: 10px 20px;">Pending</a>
+                                                    {% else %}
+                                                        <a href="" class="btn btn-outline-success btn-sm" style="padding: 10px 20px;">Solved</a>
+                                                    {% endif %}
+                                                </td>
+                                                
+                                                
+                                                
+                                            </tr>
+                                            {% endfor %}
+                                          
+                                            <!-- Add more rows as needed -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Required JS files -->
+<script src="{% static 'admin/vendors/js/vendor.bundle.base.js' %}"></script>
+<script src="{% static 'admin/vendors/chart.js/Chart.min.js' %}"></script>
+<script src="{% static 'admin/vendors/progressbar.js/progressbar.min.js' %}"></script>
+<script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap.min.js' %}"></script>
+<script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
+<script src="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.js' %}"></script>
+<script src="{% static 'admin/js/off-canvas.js' %}"></script>
+<script src="{% static 'admin/js/hoverable-collapse.js' %}"></script>
+<script src="{% static 'admin/js/misc.js' %}"></script>
+<script src="{% static 'admin/js/settings.js' %}"></script>
+<script src="{% static 'admin/js/todolist.js' %}"></script>
+<script src="{% static 'admin/js/dashboard.js' %}"></script>
+<script>
+
+</script>
+</body>
+</html>

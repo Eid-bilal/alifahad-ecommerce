@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Your Order</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Return Your Order</h2>
+
+    <!-- Return/Exchange Request Form -->
+    <form class="text-center">
+        <h4 class="mb-3">Place a Refund/Exchange Request</h4>
+
+        <div class="form-group">
+            <label for="contactInfo">Email / Phone</label>
+            <input type="text" class="form-control mx-auto" style="max-width: 400px;" id="contactInfo" placeholder="9876543210 / john@gmail.com">
+            <small class="form-text text-muted mt-2">Enter the Email/Phone used for placing the order with us.</small>
+        </div>
+
+        <!-- Conditions for Return -->
+        <div class="alert alert-warning text-left mx-auto" style="max-width: 600px;">
+            <p><strong>Note:</strong> The products must be returned in the original condition they were received, including any bills, tags, labels, etc. Items marked as "Replace Order" cannot be returned or exchanged.</p>
+        </div>
+
+        <!-- Terms and Proceed Button -->
+        <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" id="termsCheck">
+            <label class="form-check-label" for="termsCheck">By proceeding, you accept our <a href="#">Terms & Conditions</a></label>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Proceed</button>
+    </form>
+
+    <!-- Help Section -->
+    <div class="text-center mt-5">
+        <p>Need Help? <a href="#">Contact Us</a></p>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Edit Coupon</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'admin/vendors/jvectormap/jquery-jvectormap.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/flag-icon-css/css/flag-icon.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.theme.default.min.css' %}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}">
+  </head>
+  <body>
+    <div class="container-scroller">
+      {% include 'admin/sidebar.html' %}
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        {% include 'admin/navbar.html' %}
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Edit Coupon</h4>
+                    <form method="POST" action="">
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <label for="code">Coupon Code</label>
+                        <input type="text" class="form-control" id="code" name="code" maxlength="30" value="{{ coupon.code }}" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="discount_value">Discount Value</label>
+                        <input type="number" step="0.01" class="form-control" id="discount_value" name="discount_value" max="9999999999" value="{{ coupon.discount_value }}" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="min_purchase_amount">Minimum Purchase Amount</label>
+                        <input type="number" step="0.01" class="form-control" id="min_purchase_amount" name="min_purchase_amount" max="9999999999" value="{{ coupon.min_purchase_amount }}" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="valid_from">Valid From</label>
+                        <input type="text" class="form-control datepicker" id="valid_from" name="valid_from" value="{{ coupon.valid_from|date:'Y-m-d' }}" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="valid_to">Valid To</label>
+                        <input type="text" class="form-control datepicker" id="valid_to" name="valid_to" value="{{ coupon.valid_to|date:'Y-m-d' }}" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="usage_limit">Usage Limit</label>
+                        <input type="number" class="form-control" id="usage_limit" name="usage_limit" value="{{ coupon.usage_limit }}" min="1" required>
+                      </div>
+                      <div class="form-footer">
+                        <a href="{% url 'coupon_management' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update Coupon</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- content-wrapper ends -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="{% static 'admin/vendors/js/vendor.bundle.base.js' %}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{% static 'admin/vendors/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/progressbar.js/progressbar.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
+    <script src="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.js' %}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static 'admin/js/off-canvas.js' %}"></script>
+    <script src="{% static 'admin/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'admin/js/misc.js' %}"></script>
+    <script src="{% static 'admin/js/settings.js' %}"></script>
+    <script src="{% static 'admin/js/todolist.js' %}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <script src="{% static 'admin/js/dashboard.js' %}"></script>
+    <!-- End custom js for this page -->
+
+    <!-- Initialize datepicker -->
+    <script>
+      $(document).ready(function() {
+        $('.datepicker').datepicker({
+          format: 'yyyy-mm-dd',  
+          autoclose: true,
+          todayHighlight: true
+        });
+      });
+    </script>
+  </body>
+</html>

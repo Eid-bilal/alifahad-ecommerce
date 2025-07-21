@@ -1,0 +1,461 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Corona Admin</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="{% static 'admin/vendors/jvectormap/jquery-jvectormap.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/vendors/flag-icon-css/css/flag-icon.min.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.theme.default.min.css' %}">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+  <!-- End layout styles -->
+  <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
+  <!-- Cropper.js CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <!-- SweetAlert2 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <!-- SweetAlert2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  <!-- Cropper.js JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <style>
+    .pagination .page-link {
+        border: 2px solid #ffffff;
+        color: #ffffff;
+        background-color: transparent;
+    }
+    .card .card-title {
+        color: #150404;
+        margin-bottom: 1.125rem;
+        text-transform: capitalize;
+    }
+    .pagination .page-link:hover {
+        background-color: #ffffff;
+        color: #333333;
+        border-color: #ffffff;
+    }
+    .pagination .active .page-link {
+        background-color: #ffffff;
+        color: #333333;
+        border-color: #ffffff;
+    }
+    .content-wrapper {
+        background: lab(100% 0.01 -0.01);
+        padding: 1.875rem 1.75rem;
+        width: 100%;
+        -webkit-flex-grow: 1;
+        flex-grow: 1;
+    }
+    .card-body {
+        background-color: lab(100% 0.01 -0.01);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-scroller">
+    {% include 'admin/sidebar.html' %}
+    <div class="container-fluid page-body-wrapper">
+      <nav class="navbar p-0 fixed-top d-flex flex-row">
+        <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+          <a class="navbar-brand brand-logo-mini" href="index.html">
+            <img src="" alt="logo" />
+          </a>
+        </div>
+        <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+            <span class="mdi mdi-menu"></span>
+          </button>
+          <ul class="navbar-nav w-100">
+            <li class="nav-item w-100">
+              <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search" method="GET" action="{% url 'product_management' %}">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="q"
+                  placeholder="Search products"
+                  value="{{ query|default:'' }}"
+                >
+                <button type="submit" class="btn btn-primary ml-2">Search</button>
+              </form>
+            </li>
+          </ul>
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a href="{% url 'admin_logout' %}" class="nav-link btn btn-primary">
+                Log out
+              </a>
+            </li>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+            <span class="mdi mdi-format-line-spacing"></span>
+          </button>
+        </div>
+      </nav>
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <!-- Display Messages -->
+          {% if messages %}
+          <div class="container mt-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <!-- Create New Product Button -->
+          <div class="mb-4">
+            <button class="btn btn-success" data-toggle="modal" data-target="#createProductModal">
+              + Create New Product
+            </button>
+          </div>
+          <!-- Content Block -->
+          {% block content %}
+          <div class="row">
+           
+
+            <div class="col-12 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Product Details</h4>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>
+                            <div class="form-check form-check-muted m-0">
+                              <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input">
+                              </label>
+                            </div>
+                          </th>
+                          <th>Id</th>
+                          <th>Product Name</th>
+                          <th>Category</th>
+                          <th>Unit</th>
+                          <th>Image 1</th>
+                          <th>Image 2</th>
+                          <th>Image 3</th>
+                          <th>Offer</th>
+                          <th>Add Stock</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for product in product %}
+                        <tr>
+                          <td>
+                            <div class="form-check form-check-muted m-0">
+                              <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input">
+                              </label>
+                            </div>
+                          </td>
+                          <td>{{ product.id }}</td>
+                          <td>{{ product.product_name }}</td>
+                          <td>{{ product.category }}</td>
+                          <td>{{ product.category.category_unit }}</td>
+                          <td><img src="{{ product.image_1.url }}" alt="Image 1" width="50"></td>
+                          <td>
+                            {% if product.image_2 %}
+                            <img src="{{ product.image_2.url }}" alt="Image 2" width="50">
+                            {% else %}
+                            No Image
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if product.image_3 %}
+                            <img src="{{ product.image_3.url }}" alt="Image 3" width="50">
+                            {% else %}
+                            No Image
+                            {% endif %}
+                          </td>
+                          <td>{{ product.offer_percentage }}%</td>
+                          <td>
+                            <a href="{% url 'variant_list' product.id %}" class="btn btn-info">Add</a>
+                          </td>
+                          <td>
+                            <a href="{% url 'edit_product' product.id %}" class="btn btn-success">Edit</a>
+                            <a href="{% url 'toggle_product_listing' product.id %}"
+                              class="btn {% if product.is_listed %}btn-outline-primary{% else %}btn-outline-secondary{% endif %}">
+                              {% if product.is_listed %} Unlist {% else %} Relist {% endif %}
+                            </a>
+                          </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                          <td colspan="11">No products found.</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Paginator -->
+          <div class="pagination-container mt-4">
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-center">
+                {% if product.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ product.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">«</span>
+                  </a>
+                </li>
+                {% endif %}
+                {% for i in product.paginator.page_range %}
+                {% if product.number == i %}
+                <li class="page-item active">
+                  <a class="page-link" href="#">{{ i }}</a>
+                </li>
+                {% else %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if product.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ product.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">»</span>
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+            </nav>
+          </div>
+          {% endblock %}
+          <!-- Create New Product Modal -->
+          <div class="modal fade" id="createProductModal" tabindex="-1" aria-labelledby="createProductModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="createProductModalLabel">Create New Product</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form id="createProductForm" method="POST" enctype="multipart/form-data" action="{% url 'product_management' %}">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div class="form-group">
+                      {{ form.product_name.label_tag }}
+                      {{ form.product_name }}
+                      {% if form.product_name.errors %}
+                      <div class="text-danger">{{ form.product_name.errors }}</div>
+                      {% endif %}
+                    </div>
+                    <div class="form-group">
+                      {{ form.description.label_tag }}
+                      {{ form.description }}
+                      {% if form.description.errors %}
+                      <div class="text-danger">{{ form.description.errors }}</div>
+                      {% endif %}
+                    </div>
+                    <div class="form-group">
+                      {{ form.category.label_tag }}
+                      {{ form.category }}
+                      {% if form.category.errors %}
+                      <div class="text-danger">{{ form.category.errors }}</div>
+                      {% endif %}
+                    </div>
+                    <div class="form-group">
+                      {{ form.offer_percentage.label_tag }}
+                      {{ form.offer_percentage }}
+                      {% if form.offer_percentage.errors %}
+                      <div class="text-danger">{{ form.offer_percentage.errors }}</div>
+                      {% endif %}
+                    </div>
+                    <div class="form-group">
+                      {{ form.image_1.label_tag }}
+                      <input type="file" id="image1Input" name="image_1" accept="image/*" class="form-control-file">
+                      <div class="image-preview">
+                        <img id="image1Preview" style="max-width: 100%; margin-top: 10px; display: none;">
+                        <button type="button" id="cropImage1Button" class="btn btn-primary" style="display: none;">Crop</button>
+                      </div>
+                      {% if form.image_1.errors %}
+                      <div class="text-danger">{{ form.image_1.errors }}</div>
+                      {% endif %}
+                    </div>
+                    <div class="form-group">
+                      {{ form.image_2.label_tag }}
+                      <input type="file" id="image2Input" name="image_2" accept="image/*" class="form-control-file">
+                      <div class="image-preview">
+                        <img id="image2Preview" style="max-width: 100%; margin-top: 10px; display: none;">
+                        <button type="button" id="cropImage2Button" class="btn btn-primary" style="display: none;">Crop</button>
+                      </div>
+                      {% if form.image_2.errors %}
+                      <div class="text-danger">{{ form.image_2.errors }}</div>
+                      {% endif %}
+                    </div>
+                    <div class="form-group">
+                      {{ form.image_3.label_tag }}
+                      <input type="file" id="image3Input" name="image_3" accept="image/*" class="form-control-file">
+                      <div class="image-preview">
+                        <img id="image3Preview" style="max-width: 100%; margin-top: 10px; display: none;">
+                        <button type="button" id="cropImage3Button" class="btn btn-primary" style="display: none;">Crop</button>
+                      </div>
+                      {% if form.image_3.errors %}
+                      <div class="text-danger">{{ form.image_3.errors }}</div>
+                      {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-success">Create Product</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Crop Image Modal -->
+          <div class="modal fade" id="cropImageModal" tabindex="-1" role="dialog" aria-labelledby="cropImageModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="cropImageModalLabel">Crop Image</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div>
+                    <img id="cropImage" src="" alt="Image to crop" style="max-width: 100%;">
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" id="cropImageButton" class="btn btn-primary">Crop</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="{% static 'admin/vendors/js/vendor.bundle.base.js' %}"></script>
+  <script src="{% static 'admin/vendors/chart.js/Chart.min.js' %}"></script>
+  <script src="{% static 'admin/vendors/progressbar.js/progressbar.min.js' %}"></script>
+  <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap.min.js' %}"></script>
+  <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
+  <script src="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.js' %}"></script>
+  <!-- inject:js -->
+  <script src="{% static 'admin/js/off-canvas.js' %}"></script>
+  <script src="{% static 'admin/js/hoverable-collapse.js' %}"></script>
+  <script src="{% static 'admin/js/misc.js' %}"></script>
+  <script src="{% static 'admin/js/settings.js' %}"></script>
+  <script src="{% static 'admin/js/todolist.js' %}"></script>
+  <script src="{% static 'admin/js/dashboard.js' %}"></script>
+  <!-- Custom JS for image cropping -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      let cropper;
+      const cropImageModal = new bootstrap.Modal(document.getElementById('cropImageModal'));
+      const cropImageElement = document.getElementById('cropImage');
+      const cropImageButton = document.getElementById('cropImageButton');
+      const imageInputs = document.querySelectorAll('input[type="file"]');
+      const imagePreviews = document.querySelectorAll('.image-preview img');
+      const cropButtons = document.querySelectorAll('.image-preview button');
+
+      function setupCropper() {
+        if (cropper) {
+          cropper.destroy();
+        }
+        cropper = new Cropper(cropImageElement, {
+          aspectRatio: 1,
+          viewMode: 1,
+          autoCropArea: 1
+        });
+      }
+
+      function handleImageInputChange(event, inputIndex) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            cropImageElement.src = e.target.result;
+            cropImageElement.dataset.inputIndex = inputIndex;
+            setupCropper();
+            cropImageModal.show();
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function handleCropImage() {
+        const croppedCanvas = cropper.getCroppedCanvas();
+        const inputIndex = cropImageElement.dataset.inputIndex;
+        const fileInput = imageInputs[inputIndex];
+        croppedCanvas.toBlob(function (blob) {
+          const dataTransfer = new DataTransfer();
+          const newFile = new File([blob], 'cropped-image.jpg', { type: blob.type });
+          dataTransfer.items.add(newFile);
+          fileInput.files = dataTransfer.files;
+          // Update preview
+          imagePreviews[inputIndex].src = URL.createObjectURL(newFile);
+          imagePreviews[inputIndex].style.display = 'block';
+          cropButtons[inputIndex].style.display = 'block';
+        });
+        cropper.destroy();
+        cropImageModal.hide();
+      }
+
+      imageInputs.forEach((input, index) => {
+        input.addEventListener('change', function (e) {
+          handleImageInputChange(e, index);
+        });
+      });
+
+      cropButtons.forEach((button, index) => {
+        button.addEventListener('click', function () {
+          const file = imageInputs[index].files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              cropImageElement.src = e.target.result;
+              cropImageElement.dataset.inputIndex = index;
+              setupCropper();
+              cropImageModal.show();
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      });
+
+      cropImageButton.addEventListener('click', handleCropImage);
+
+      // Display form errors if any
+      {% if form.errors %}
+      Swal.fire({
+        icon: 'error',
+        title: 'Form Errors',
+        html: '{% for field, errors in form.errors.items %}<p>{{ field|capfirst }}: {{ errors|join:", " }}</p>{% endfor %}',
+        confirmButtonText: 'OK'
+      });
+      {% endif %}
+    });
+  </script>
+</body>
+</html>

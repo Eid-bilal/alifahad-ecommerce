@@ -1,0 +1,307 @@
+{% extends 'user/base.html' %}
+{% load static %}
+	
+
+{% block content %} 
+
+
+	
+	<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.product_name }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- Additional CSS for Slick Carousel -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"/>
+    <style>
+        #discount-percentage { 
+            color: #43A047; 
+            font-weight: bold; 
+        }
+        .original-price { 
+            text-decoration: line-through; 
+            color: #888; 
+            margin-right: 10px; } 
+        .discounted-price { 
+            color: #b10357; 
+            font-weight: bold; 
+            margin-right: 10px; }
+
+        .stock {
+            color: #514701; 
+        }
+        .out-of-stock { 
+            color: #E53935; 
+            font-weight: bold; 
+        }
+    </style>
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Panzoom.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.0.0/dist/panzoom.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@panzoom/panzoom.css">
+
+    
+</head>
+<body>
+    
+    {% block main_content %}
+    
+    {% endblock %}
+<section class="sec-product-detail bg0 p-t-65 p-b-60">
+  <br><br>
+  <div class="container">
+      <div class="row">
+          <div class="col-md-6 col-lg-7 p-b-30">
+              <div class="p-l-25 p-r-30 p-lr-0-lg">
+                  <div class="wrap-slick3 flex-sb flex-w">
+                      <div class="wrap-slick3-dots"></div>
+                      <div class="wrap-slick3-arrows flex-sb-m flex-w"></div>
+
+                      <!-- <div class="slick3 gallery-lb">
+                          <div class="item-slick3" data-thumb="{{ product.image_1.url }}">
+                              <div class="wrap-pic-w pos-relative">
+                                  <img src="{{ product.image_1.url }}" alt="IMG-PRODUCT">
+                                  <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="{{ product.image_1.url }}">
+                                      <i class="fa fa-expand"></i>
+                                  </a>
+                              </div>
+                          </div>
+
+                          <div class="item-slick3" data-thumb="{{ product.image_2.url }}">
+                              <div class="wrap-pic-w pos-relative">
+                                  <img src="{{ product.image_2.url }}" alt="IMG-PRODUCT">
+                                  <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="{{ product.image_2.url }}">
+                                      <i class="fa fa-expand"></i>
+                                  </a>
+                              </div>
+                          </div>
+
+                          <div class="item-slick3" data-thumb="{{ product.image_3.url }}">
+                              <div class="wrap-pic-w pos-relative">
+                                  <img src="{{ product.image_3.url }}" alt="IMG-PRODUCT">
+                                  <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="{{ product.image_3.url }}">
+                                      <i class="fa fa-expand"></i>
+                                  </a>
+                              </div>
+                          </div>
+                      </div> -->
+                      <div class="slick3 gallery-lb">
+                        <div class="item-slick3" data-thumb="{{ product.image_1.url }}">
+                            <div class="wrap-pic-w pos-relative">
+                                <img src="{{ product.image_1.url }}" alt="IMG-PRODUCT" id="image1">
+                                <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="{{ product.image_1.url }}">
+                                    <i class="fa fa-expand"></i>
+                                </a>
+                            </div>
+                        </div>
+                    
+                        <div class="item-slick3" data-thumb="{{ product.image_2.url }}">
+                            <div class="wrap-pic-w pos-relative">
+                                <img src="{{ product.image_2.url }}" alt="IMG-PRODUCT" id="image2">
+                                <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="{{ product.image_2.url }}">
+                                    <i class="fa fa-expand"></i>
+                                </a>
+                            </div>
+                        </div>
+                    
+                        <div class="item-slick3" data-thumb="{{ product.image_3.url }}">
+                            <div class="wrap-pic-w pos-relative">
+                                <img src="{{ product.image_3.url }}" alt="IMG-PRODUCT" id="image3">
+                                <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="{{ product.image_3.url }}">
+                                    <i class="fa fa-expand"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                  </div>
+              </div>
+          </div>
+
+          <!-- Product Details Section -->
+          <div class="col-md-6 col-lg-5 p-b-30">
+              <div class="p-r-50 p-t-5 p-lr-0-lg">
+                  <h4 class="mtext-105 cl2 js-name-detail p-b-14">
+                      {{ product.product_name }}
+                  </h4>
+                  <span class="mtext-106 cl2">
+                      ₹<span class="original-price" id="variant-price">{{ product.variants.price  }}</span>
+                      <span class="discounted-price" id="discounted-price">{{ product.variants.product_price_after }}</span>
+                      <span class="discount-percentage" id="discount-percentage">{{ offer }}% off</span>
+
+                  </span>
+                  <span>
+                    <p class="stock" id="stock"></p>
+                  </span>
+                  <p class="stext-102 cl3 p-t-23">
+                      {{ product.description }}
+                  </p>
+                  
+                   <!-- Variant Selector -->
+                <form method="post" action="{% url 'user:add_to_cart' %}">
+                    {% csrf_token %}
+                    <label for="variant">Select Variant:</label>
+                    <select id="variant" name="variant_id" class="form-control" required onchange="updatePrice()">
+                        {% for variant in product.variants.all %}
+                        <option value="{{ variant.id }}" 
+                                data-price="{{ variant.price }}" 
+                                data-stock="{{ variant.stock }}"
+                                data-discount="{{ variant.product_price_after }}"
+                                data-percentage="{{ variant.highest_offer }}">
+                            {{ variant.size }}
+                        </option>
+                        
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary mt-3">Add to Cart</button>
+
+                    <!-- Quantity Selector -->
+                    <label for="quantity"></label>
+                    <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1" max="1" hidden>
+
+                </form>
+                <!-- Add to Wishlist Button -->
+                <button type="button" id="wishlist-button" class="btn btn-secondary mt-3" onclick="addToWishlist()">
+                    Add to Wishlist
+                </button>
+
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+<script>
+    function updatePrice() {
+        const variantSelect = document.getElementById("variant");
+        const selectedOption = variantSelect.options[variantSelect.selectedIndex];
+        const price = selectedOption.getAttribute("data-price");
+        const stock = selectedOption.getAttribute("data-stock");
+        const discountedPrice = selectedOption.getAttribute("data-discount");
+        
+
+        document.getElementById("variant-price").innerText = price;
+        document.getElementById("quantity").max = stock;
+        document.getElementById('discounted-price').textContent = `₹${discountedPrice}`;
+        
+
+        if (stock == 0) {
+            document.getElementById('stock').textContent = "Out of Stock";
+            document.getElementById('stock').classList.add('out-of-stock');
+        } else {
+            document.getElementById('stock').textContent = `Stock: ${stock}`;
+            document.getElementById('stock').classList.remove('out-of-stock');
+        }
+        
+    }
+
+    document.addEventListener("DOMContentLoaded", updatePrice);
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        {% if messages %}
+            {% for message in messages %}
+                Swal.fire({
+                    icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}",
+                    title: "{{ message }}",
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            {% endfor %}
+        {% endif %}
+    });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+
+
+<!-- SweetAlert Script -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function addToWishlist() {
+        const variantId = document.getElementById('variant').value;
+        console.log(variantId,"this is my variant id")
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch("{% url 'add_to_wishlist' %}", {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+    },
+    body: JSON.stringify({ variant_id: variantId }),
+})
+
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                Swal.fire('Success', data.message, 'success');
+            } else if (data.status === 'info') {
+                Swal.fire('Info', data.message, 'info');
+            } else {
+                Swal.fire('Error', data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error adding to wishlist:', error);
+            Swal.fire('Error', 'Something went wrong while adding to the wishlist.', 'error');
+        });
+    }
+</script>
+
+<script> //for zooming
+    document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Panzoom for each image
+    const panzoom1 = Panzoom(document.getElementById('image1'), {
+        maxScale: 3, // Max zoom level (3x)
+        minScale: 1, // Min zoom level (1x - no zoom)
+        contain: 'outside', // Prevents image from going outside the container
+    });
+
+    const panzoom2 = Panzoom(document.getElementById('image2'), {
+        maxScale: 3,
+        minScale: 1,
+        contain: 'outside',
+    });
+
+    const panzoom3 = Panzoom(document.getElementById('image3'), {
+        maxScale: 3,
+        minScale: 1,
+        contain: 'outside',
+    });
+
+    // Optional: Add mouse wheel zoom
+    document.querySelectorAll('.item-slick3 img').forEach(img => {
+        img.addEventListener('wheel', event => {
+            if (event.deltaY > 0) {
+                panzoom1.zoomOut();
+            } else {
+                panzoom1.zoomIn();
+            }
+        });
+    });
+});
+
+</script>
+
+</body>
+</html>
+
+{% endblock %}

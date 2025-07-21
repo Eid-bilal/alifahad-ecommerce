@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Track Your Order</h2>
+
+    <!-- Order Tracking Form -->
+    <form class="text-center">
+        <p class="mb-4">Enter your order number to check its status.</p>
+        
+        <div class="form-group">
+            <input type="text" class="form-control mx-auto" style="max-width: 400px;" id="orderNumber" placeholder="Order Number">
+        </div>
+        
+        <button type="submit" class="btn btn-primary mt-3">Track Order</button>
+    </form>
+
+    <!-- Example Order Status Section (to display after order is tracked) -->
+    <div class="order-status mt-5 text-center" style="display: none;">
+        <h5>Order Status</h5>
+        <p>Order #12345</p>
+        <ul class="list-group mt-3">
+            <li class="list-group-item">Order Placed: March 1, 2024</li>
+            <li class="list-group-item">Shipped: March 3, 2024</li>
+            <li class="list-group-item">Estimated Delivery: March 7, 2024</li>
+        </ul>
+        <p class="mt-3 text-muted">Your order is currently in transit. We’ll notify you once it’s out for delivery!</p>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Optional JS to Show Order Status (for demo purposes) -->
+<script>
+    document.querySelector("form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        document.querySelector(".order-status").style.display = "block";
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Chat Room: {{ room.name }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 h-screen">
+    <div class="container mx-auto p-4 h-full flex flex-col">
+        <!-- Admin Header -->
+        <div class="bg-purple-700 shadow rounded-t-lg p-4 mb-2">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl font-semibold text-white flex items-center">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    Admin Chat Room: {{ room.name }}
+                </h1>
+                <span class="bg-purple-900 text-white px-3 py-1 rounded-full text-sm">
+                    <i class="fas fa-headset mr-1"></i>
+                    Admin Mode
+                </span>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="flex-1 bg-white shadow rounded-b-lg flex flex-col">
+            <!-- Messages Area -->
+            <div id="chat-log" class="flex-1 p-4 overflow-y-auto space-y-4">
+                {% for message in messages %}
+                <div class="flex {% if message.user.is_superuser %}justify-end{% else %}justify-start{% endif %} gap-2">
+                    {% if not message.user.is_superuser %} 
+                    <!-- User Avatar -->
+                    <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                        <i class="fas fa-user text-gray-600"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Message Bubble -->
+                    <div class="max-w-[70%]">
+                        <div class="{% if message.user.is_superuser %}bg-purple-600 text-white rounded-l-lg rounded-tr-lg{% else %}bg-gray-200 text-gray-800 rounded-r-lg rounded-tl-lg{% endif %} px-4 py-2">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-sm">{{ message.user.username }}</span>
+                                {% if message.user.is_superuser %}
+                                <span class="bg-purple-800 text-xs px-2 py-0.5 rounded-full">Admin</span>
+                                {% endif %}
+                            </div>
+                            <div class="text-sm mt-1">{{ message.message }}</div>
+                            <div class="text-xs mt-1 {% if message.user.is_superuser %}text-purple-200{% else %}text-gray-500{% endif %}">
+                                {{ message.timestamp|date:"g:i A" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if message.user.is_superuser %}
+                    <!-- Admin Avatar -->
+                    <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-purple-600"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Admin Input Area -->
+            <div class="border-t p-4 bg-purple-50">
+                <div class="flex space-x-4">
+                    <input id="chat-message-input" 
+                           class="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500" 
+                           type="text" 
+                           placeholder="Type your admin response...">
+                    <button id="chat-message-submit" 
+                            class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Send Response
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chatSocket;
+        const roomName = "{{ room.name }}";
+
+        function connect() {
+            chatSocket = new WebSocket(
+                `ws://${window.location.host}/ws/chat/${roomName}/`
+            );
+
+            chatSocket.onopen = function(e) {
+                console.log("WebSocket connection opened.");
+            };
+
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                const chatLog = document.querySelector('#chat-log');
+                const messageContainer = document.createElement('div');
+                const isStaff = data.is_superuser || false;
+
+                console.log('this is for checking whether admin or user: ', isStaff)
+                
+                messageContainer.className = `flex ${isStaff ? 'justify-end' : 'justify-start'} gap-2`;
+                
+                const currentTime = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                
+                const avatarHtml = isStaff ? 
+                    `<div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-purple-600"></i>
+                    </div>` :
+                    `<div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                        <i class="fas fa-user text-gray-600"></i>
+                    </div>`;
+
+                messageContainer.innerHTML = `
+                    ${!isStaff ? avatarHtml : ''}
+                    <div class="max-w-[70%]">
+                        <div class="${isStaff ? 'bg-purple-600 text-white rounded-l-lg rounded-tr-lg' : 'bg-gray-200 text-gray-800 rounded-r-lg rounded-tl-lg'} px-4 py-2">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-sm">${data.user}</span>
+                                ${isStaff ? '<span class="bg-purple-800 text-xs px-2 py-0.5 rounded-full">Admin</span>' : ''}
+                            </div>
+                            <div class="text-sm mt-1">${data.message}</div>
+                            <div class="text-xs mt-1 ${isStaff ? 'text-purple-200' : 'text-gray-500'}">${currentTime}</div>
+                        </div>
+                    </div>
+                    ${isStaff ? avatarHtml : ''}
+                `;
+                
+                chatLog.appendChild(messageContainer);
+                chatLog.scrollTop = chatLog.scrollHeight;
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly. Reconnecting...');
+                setTimeout(connect, 1000);
+            };
+        }
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value.trim();
+            
+            if (!message) return;
+
+            if (chatSocket.readyState === WebSocket.OPEN) {
+                chatSocket.send(JSON.stringify({
+                    'message': message
+                }));
+                messageInputDom.value = '';
+            } else {
+                console.error('WebSocket is not open. Current state:', chatSocket.readyState);
+            }
+        };
+
+        // Initiate the connection
+        connect();
+
+        // Scroll to bottom on load
+        window.onload = function() {
+            const chatLog = document.querySelector('#chat-log');
+            chatLog.scrollTop = chatLog.scrollHeight;
+        };
+    </script>
+</body>
+</html>

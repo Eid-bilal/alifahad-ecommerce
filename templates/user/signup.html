@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+    <style>
+        body {
+            background-color: rgb(247, 246, 247);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .register-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .register-heading {
+            text-align: center;
+            color: rgb(70, 5, 221);
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .btn-register {
+            background-color: orange;
+            color: #fff;
+        }
+        .btn-register:hover {
+            background-color: darkorange;
+        }
+    </style>
+</head>
+<body>
+    
+
+    <div class="register-container">
+        <h2 class="register-heading">Create Account</h2>
+        <form action="{% url 'signup' %}" method="post">
+            {% csrf_token %}
+            
+            <!-- Username Field -->
+            <div class="form-group">
+                <label for="username">Name</label>
+                <input type="text" class="form-control {% if errors.username_error %}is-invalid{% endif %}" id="username" name="username" placeholder="Enter your name" value="{{ request.POST.username }}">
+                {% if errors.username_error %}
+                    <div class="invalid-feedback">{{ errors.username_error }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Mobile Number Field -->
+            <div class="form-group">
+                <label for="mobile">Mobile Number</label>
+                <input type="tel" class="form-control {% if errors.mobile_number_error %}is-invalid{% endif %}" id="mobile" name="mobile" placeholder="Enter your mobile number" value="{{ request.POST.mobile }}">
+                {% if errors.mobile_number_error %}
+                    <div class="invalid-feedback">{{ errors.mobile_number_error }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Email Field -->
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control {% if errors.email_error %}is-invalid{% endif %}" id="email" name="email" placeholder="Enter your email" value="{{ request.POST.email }}">
+                {% if errors.email_error %}
+                    <div class="invalid-feedback">{{ errors.email_error }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Password Field -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control {% if errors.password_error %}is-invalid{% endif %}" id="password" name="password" placeholder="Enter your password">
+                {% if errors.password_error %}
+                    <!-- Display multiple password errors -->
+                    {% for error in errors.password_error %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <!-- Confirm Password Field -->
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" class="form-control {% if errors.password_error %}is-invalid{% endif %}" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password">
+                {% if errors.password_error %}
+                    <!-- Re-display password error messages for confirmation field -->
+                    {% for error in errors.password_error %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+    
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-register btn-block">Register</button>
+        </form>
+        <div class="text-center mt-2">
+            <p>Do you have already an account? <a href="{% url 'login' %}">Login</a></p>
+        </div>
+    </div>
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script>
+        const input = document.querySelector("#mobile");
+        window.intlTelInput(input, {
+            initialCountry: "auto",
+            geoIpLookup: function(success, failure) {
+                fetch("https://ipinfo.io/json?token=YOUR_API_TOKEN", { 
+                    headers: { "Accept": "application/json" } 
+                })
+                .then(resp => resp.json())
+                .then(resp => success(resp.country))
+                .catch(() => success("US"));
+            },
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+        });
+    </script>
+</body>
+</html>
+

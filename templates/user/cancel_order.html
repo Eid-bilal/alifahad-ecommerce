@@ -1,0 +1,18 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Cancel Order (Order Number: {{ order.serial_number }})</h2>
+        <p><strong>Order Date:</strong> {{ order.order_date|date:"d M Y, H:i" }}</p>
+        <p><strong>Total Amount:</strong> ₹{{ order.total_amount }}</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="reason">Reason for cancellation:</label>
+                <textarea name="reason" id="reason" class="form-control" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger">Cancel Order</button>
+        </form>
+    </div>
+{% endblock %}

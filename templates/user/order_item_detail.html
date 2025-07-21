@@ -1,0 +1,62 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Detail</title>
+</head>
+<body>
+    {% if messages %} <div class="messages"> 
+        {% for message in messages %} 
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}"> 
+            {{ message }} 
+        </div> 
+        {% endfor %} 
+    </div> 
+    {% endif %}
+    <h1>Order {{ order.serial_number }}</h1>
+    <p>User: {{ order.user_id.username }}</p>
+    <p>Total Amount: ₹{{ order.total_amount }}</p>
+    <p>Order Date: {{ order.order_date }}</p>
+    <p>Payment Status: {{ order.payment_status }}</p>
+    <p>Order Status: {{ order.status }}</p>
+
+    <h3>Order Items</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_item %}
+            <tr>
+                <td>{{ item.product_added.product.product_name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.final_product_price }}</td>
+                <td>{{ item.status }}</td>
+                <td>
+                    {% if item.status == 'Delivered' %}
+                    <form method="post" action="{% url 'request_item_return' item.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Request Return</button>
+                    </form>
+                    {% else %}
+                    <span>Cannot Request Return</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+{% endblock %}

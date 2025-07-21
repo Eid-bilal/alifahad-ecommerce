@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Dashboard</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'admin/vendors/jvectormap/jquery-jvectormap.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/flag-icon-css/css/flag-icon.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.theme.default.min.css' %}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
+    <style>
+        /* Basic pagination styling */
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.pagination .step-links a,
+.pagination .step-links span {
+    margin: 0 5px;
+    padding: 8px 16px;
+    text-decoration: none;
+    color: #e6eff9;
+    background-color: #4a4b4d;
+    border: 1px solid #2e2e2f;
+    border-radius: 5px;
+}
+
+.pagination .step-links a:hover {
+    background-color: #272728;
+}
+
+.pagination .current {
+    margin: 0 5px;
+    padding: 8px 16px;
+    color: #450303;
+    background-color: #3e3e3e;
+    border: 1px solid #2d2e2e;
+    border-radius: 5px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container-scroller">
+        {% include 'admin/sidebar.html' %}
+        <div class="container-fluid page-body-wrapper">
+            {% include 'admin/navbar.html' %}
+            <div class="main-panel">
+                <div class="content-wrapper">
+  
+                    <!-- Revenue and Sales Metrics -->
+                    <!-- Revenue and Sales Metrics -->
+<div class="row">
+    <!-- Overall Order Amount -->
+    
+
+
+                        
+                        
+                        
+
+
+
+
+                    </div> 
+    
+                    <!-- Top-Selling Categories -->
+                    <div class="row">
+                        <div class="col-12 grid-margin">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Top-Selling Categories</h4>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Category Name</th>
+                                                    <th>Quantity Sold</th>
+                                                    <th>Total Revenue</th>
+                                                    <th>Unit</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for category in top_category %}
+                                                <tr>
+                                                    <td>
+                                                        <img src="{{ category.product_added__product__category__category_image.url }}" alt="Category Image" style="width: 50px; height: auto;" />
+                                                        <span>{{ category.product_added__product__category__category_name }}</span>
+
+                                                        </td>
+                                                    <td>{{ category.total_quantity_sold }}{{ category.product__category__category_unit }}</td>
+                                                    <td>₹{{ category.total_revenue }}</td>
+                                                    <td>{{ category.product_added__product__category__category_unit }}</td>
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="4">No top-selling categories available.</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    
+                    
+                </div>
+                <!-- content-wrapper ends -->
+    
+                <!-- Footer -->
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">
+                            Copyright © bootstrapdash.com 2020
+                        </span>
+                        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
+                            Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com
+                        </span>
+                    </div>
+                </footer>
+                <!-- Footer ends -->
+            </div>
+            <!-- main-panel ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+    </div>
+    
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="{% static 'admin/vendors/js/vendor.bundle.base.js' %}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{% static 'admin/vendors/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/progressbar.js/progressbar.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
+    <script src="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.js' %}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static 'admin/js/off-canvas.js' %}"></script>
+    <script src="{% static 'admin/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'admin/js/misc.js' %}"></script>
+    <script src="{% static 'admin/js/settings.js' %}"></script>
+    <script src="{% static 'admin/js/todolist.js' %}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <script src="{% static 'admin/js/dashboard.js' %}"></script>
+    <!-- End custom js for this page -->
+
+</body>
+</html>

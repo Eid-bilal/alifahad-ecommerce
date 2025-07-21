@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmation</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Google Pay Confirmation</h2>
+
+    <!-- Google Pay Number Input -->
+    <div id="gpayConfirmation" class="text-center">
+        <p>You have entered the following Google Pay number:</p>
+        <h4 id="gpayNumberDisplay" class="font-weight-bold"></h4>
+        <p>Proceed with the payment?</p>
+        
+        <!-- Confirm Button -->
+        <button type="button" class="btn btn-success mt-3" id="confirmPayment">Confirm Payment</button>
+        <button type="button" class="btn btn-secondary mt-3" id="editPayment">Edit Payment</button>
+    </div>
+
+    <!-- Confirmation Message (Hidden by default) -->
+    <div id="confirmationMessage" class="text-center mt-4" style="display: none;">
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">Payment Successful! 🎉</h4>
+            <p>Thank you for your payment. Your order is being processed.</p>
+            <hr>
+            <p>You will receive a confirmation email shortly.</p>
+        </div>
+        <a href="#" class="btn btn-primary">Back to Home</a>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Show confirmation when clicking the Proceed button
+        $('#confirmPayment').click(function() {
+            const gpayNumber = $('#googlePayNumber').val();
+            $('#gpayNumberDisplay').text(gpayNumber); // Display the entered Google Pay number
+            $('#gpayConfirmation').hide(); // Hide the input section
+            $('#confirmationMessage').show(); // Show the confirmation message
+        });
+
+        // Option to go back and edit the Google Pay number
+        $('#editPayment').click(function() {
+            $('#gpayConfirmation').show(); // Show the input section again
+            $('#confirmationMessage').hide(); // Hide the confirmation message
+        });
+    });
+</script>
+
+</body>
+</html>

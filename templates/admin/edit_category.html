@@ -1,0 +1,203 @@
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Edit Category</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="{% static 'admin/vendors/jvectormap/jquery-jvectormap.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/vendors/flag-icon-css/css/flag-icon.min.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.theme.default.min.css' %}">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+  <!-- End layout styles -->
+  <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
+  <!-- Include SweetAlert CSS and JavaScript -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  <!-- Cropper.js CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+</head>
+<body>
+  <div class="container-scroller">
+      {% include 'admin/sidebar.html' %}
+      <div class="container-fluid page-body-wrapper">
+          {% include 'admin/navbar.html' %}
+          <div class="main-panel">
+              <div class="content-wrapper">
+                  <div class="row">
+                      <div class="col-12 grid-margin stretch-card">
+                          <div class="card">
+                              <div class="card-body">
+                                  <h4 class="card-title">Edit Category</h4>
+                                  {% if errors %}
+                                  <div class="alert alert-danger">
+                                      <ul>
+                                          {% for error in errors %}
+                                              <li>{{ error }}</li>
+                                          {% endfor %}
+                                      </ul>
+                                  </div>
+                                  {% endif %}
+                                  <form method="POST" action="{% url 'edit_category' category.id %}" enctype="multipart/form-data">
+                                      {% csrf_token %}
+                                      <div class="form-group">
+                                          <label for="categoryName">Category Name</label>
+                                          <input type="text" class="form-control" id="categoryName" name="category_name" value="{{ category.category_name }}" required>
+                                      </div>
+                                      <div class="form-group">
+                                          <label for="categoryImage">Category Image</label>
+                                          <input type="file" class="form-control" id="categoryImage" name="category_image" accept="image/*">
+                                          {% if category.category_image %}
+                                          <img src="{{ category.category_image.url }}" alt="Category Image" id="currentCategoryImage" style="max-width: 200px; margin-top: 10px;">
+                                          {% endif %}
+                                          <div class="img-container" style="display:none;">
+                                              <img id="categoryImagePreview" style="max-width: 100%; margin-top: 10px;">
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <label for="categoryOffer">Category Offer</label>
+                                          <input type="text" class="form-control" id="categoryOffer" name="category_offer" value="{{ category.category_offer }}">
+                                      </div>
+
+                                      <div class="form-group">
+                                          <label for="categoryUnit">Category Unit</label>
+                                          <select id="categoryUnit" name="category_unit" class="form-control">
+                                              {% for unit in units %}
+                                                  <option value="{{ unit }}" {% if unit == category.category_unit %}selected{% endif %}>{{ unit }}</option>
+                                              {% endfor %}
+                                          </select>
+                                      </div>
+                                      <button type="submit" class="btn btn-success">Update Category</button>
+                                      <a href="{% url 'category_management' %}" class="btn btn-secondary">Cancel</a>
+                                  </form>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Modal for Image Cropping -->
+  <div class="modal fade" id="cropImageModal" tabindex="-1" role="dialog" aria-labelledby="cropImageModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cropImageModalLabel">Crop Image</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <img id="cropImage" src="" alt="Image to crop" style="max-width: 100%;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="cropImageButton" class="btn btn-primary">Crop</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- End Create New Category Modal -->
+
+
+  <!-- plugins:js -->
+  <script src="{% static 'admin/vendors/js/vendor.bundle.base.js' %}"></script>
+  <script src="{% static 'admin/vendors/chart.js/Chart.min.js' %}"></script>
+  <script src="{% static 'admin/vendors/progressbar.js/progressbar.min.js' %}"></script>
+  <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap.min.js' %}"></script>
+  <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
+  <script src="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'admin/js/off-canvas.js' %}"></script>
+  <script src="{% static 'admin/js/hoverable-collapse.js' %}"></script>
+  <script src="{% static 'admin/js/misc.js' %}"></script>
+  <script src="{% static 'admin/js/settings.js' %}"></script>
+  <script src="{% static 'admin/js/todolist.js' %}"></script>
+  <script src="{% static 'admin/js/dashboard.js' %}"></script>
+
+  <!-- Cropper.js JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      let cropper;
+      const cropImageModal = new bootstrap.Modal(document.getElementById('cropImageModal'));
+      const cropImageElement = document.getElementById('cropImage');
+      const cropImageButton = document.getElementById('cropImageButton');
+      const imagePreviews = document.querySelectorAll('.image-preview img');
+      const imageInputs = document.querySelectorAll('input[type="file"]');
+
+      function setupCropper() {
+        if (cropper) {
+          cropper.destroy();
+        }
+        cropper = new Cropper(cropImageElement, {
+          aspectRatio: 1,
+          viewMode: 1,
+          autoCropArea: 1
+        });
+      }
+
+      function handleImageInputChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            cropImageElement.src = e.target.result;
+            setupCropper();
+            cropImageModal.show();
+          }
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function handleCropImage() {
+        const croppedCanvas = cropper.getCroppedCanvas();
+        croppedCanvas.toBlob(function (blob) {
+          const fileInput = document.querySelector('input[type="file"][data-crop]');
+          const dataTransfer = new DataTransfer();
+          const newFile = new File([blob], 'cropped-image.jpg', { type: blob.type });
+          dataTransfer.items.add(newFile);
+          fileInput.files = dataTransfer.files;
+
+          // Update preview image
+          const imgIndex = Array.from(imageInputs).indexOf(fileInput);
+          if (imgIndex > -1) {
+            imagePreviews[imgIndex].src = URL.createObjectURL(newFile);
+            imagePreviews[imgIndex].style.display = 'block';
+          }
+        });
+        cropper.destroy();
+        cropImageModal.hide();
+      }
+
+      imageInputs.forEach((input, index) => {
+        input.addEventListener('change', function (e) {
+          handleImageInputChange(e);
+          this.setAttribute('data-crop', true);
+        });
+      });
+
+      cropImageButton.addEventListener('click', handleCropImage);
+    });
+    alert({{ "errors"}})
+
+  </script>
+</body>
+</html>

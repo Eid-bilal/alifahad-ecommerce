@@ -1,0 +1,223 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Coupon Management</title>
+    <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+    <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+            .error-message {
+                background-color: #f8d7da; /* Light red background */
+                color: #721c24;           /* Dark red text */
+                border: 1px solid #f5c6cb; /* Border with lighter red */
+                padding: 10px;            /* Spacing inside the box */
+                margin: 10px 0;           /* Spacing between messages */
+                border-radius: 5px;       /* Rounded corners */
+                font-size: 14px;          /* Text size */
+            }
+
+            .success-message {
+                background-color: #d4edda; /* Light green background */
+                color: #155724;           /* Dark green text */
+                border: 1px solid #c3e6cb; /* Border with lighter green */
+                padding: 10px;            /* Spacing inside the box */
+                margin: 10px 0;           /* Spacing between messages */
+                border-radius: 5px;       /* Rounded corners */
+                font-size: 14px;          /* Text size */
+            }
+        </style>
+  </head>
+
+  <body>
+    <div class="container-scroller">
+      {% include 'admin/sidebar.html' %}
+      <div class="container-fluid page-body-wrapper">
+        {% include 'admin/navbar.html' %}
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <!-- Create New Coupon Button -->
+            <div class="mb-4">
+              <button class="btn btn-success" data-toggle="modal" data-target="#createCouponModal">
+                + Create New Coupon
+              </button>
+            </div>
+
+            <!-- Modal for creating new coupon -->
+            <div class="modal fade" id="createCouponModal" tabindex="-1" role="dialog" aria-labelledby="createCouponModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="createCouponModalLabel">Create New Coupon</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <!-- Form for creating new coupon -->
+                    <form method="POST" action="{% url 'coupon_add' %}">
+                      {% csrf_token %}
+                      <div class="form-group">
+                        <label for="code">Coupon Code</label>
+                        <input type="text" class="form-control" id="code" name="code" value="{{ data.code|default_if_none:'' }}" maxlength="30" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="discount_type">Discount Type</label>
+                        <!-- Dropdown for discount type -->
+                        <select class="form-control" id="discount_type" name="discount_type" required>
+                          <option value="" disabled selected>Select Discount Type</option>
+                          <option value="percentage" {% if data.discount_type == "percentage" %}selected{% endif %} >Percentage</option>
+                          <option value="fixed" {% if data.discount_type == "fixed" %}selected{% endif %} >Fixed Amount</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="discount_amount" id="discount_label">Discount Value</label>
+                        <!-- Updated discount_amount input to dynamically update -->
+                        <input type="number" step="0.01" class="form-control" id="discount_amount" name="discount_amount" value="{{ data.discount_amount|default_if_none:'' }}" max="9999999999" placeholder="Enter value" required>
+                      </div>
+
+
+                      <div class="form-group">
+                        <label for="min_purchase_amount">Minimum Purchase Amount</label>
+                        <input type="number" step="0.01" class="form-control" id="min_purchase_amount" name="min_purchase_amount" value="{{ data.min_purchase_amount|default_if_none:'' }}" required>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label for="usage_limit">Usage Limit</label>
+                        <input type="number" class="form-control" id="usage_limit" name="usage_limit" value="{{ data.usage_limit|default_if_none:'' }}" min="1" required>
+                      </div>
+                      
+
+
+
+                      <div class="form-group">
+                        <label for="valid_until">Valid Until</label>
+                        <input type="text" class="form-control datepicker" id="valid_until" name="valid_until" value="{{ data.valid_until|default_if_none:'' }}">
+                      </div>
+                      <div class="form-group">
+                        <label for="active">Active</label>
+                        <input type="checkbox" id="active" name="active" {% if data.active == "on" %}checked{% endif %}>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create Coupon</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {% if messages %}
+    <div>
+
+        {% for message in messages %}
+            <div class="{% if message.tags %}{{ message.tags }}-message{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+
+            <!-- Existing Coupons Table -->
+            <div class="row">
+              <div class="col-12 grid-margin">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Coupon Details</h4>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Code</th>
+                            <th>Discount</th>
+                            <th>Discount Type</th>
+                            <th>Min Purchase</th>
+                            <th>Limit</th>
+                            <th>Active</th>
+                            <th>Created At</th>
+                            <th>Valid Until</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for coupon in coupons %}
+                          <tr>
+                            <td>{{ coupon.id }}</td>
+                            <td>{{ coupon.code }}</td>
+                            <td>
+                              {% if coupon.discount_type == "percentage" %}
+                                {{ coupon.discount_amount|floatformat:2 }}%
+                              {% else %}
+                              ₹ {{ coupon.discount_amount }}
+                              {% endif %}
+                            </td>
+                            <td>{{ coupon.discount_type }}</td>
+                            <td>{{ coupon.min_purchase_amount }}</td>
+                            <td>{{ coupon.usage_limit }}</td>
+                            <td>{{ coupon.active|yesno:"Yes,No" }}</td>
+                            <td>{{ coupon.created_at }}</td>
+                            <td>{{ coupon.valid_until }}</td>
+                            <td>
+                              <a href="{% url 'coupon_edit' coupon.id %}" class="btn btn-primary">Edit</a>
+                              <a href="{% url 'coupon_delete' coupon.id %}" class="btn btn-danger">Delete</a>
+                            </td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('.datepicker').datepicker({
+          format: 'yyyy-mm-dd',
+          autoclose: true,
+          todayHighlight: true
+        });
+
+        // Dynamically update the discount amount field based on the selected discount type
+        $('#discount_type').on('change', function() {
+          const discountType = $(this).val();
+          const discountField = $('#discount_amount');
+          const discountLabel = $('#discount_label');
+
+          if (discountType === 'percentage') {
+            discountField.attr('step', '1'); // Percentage values should be whole numbers
+            discountField.attr('placeholder', 'Enter percentage (e.g., 10)');
+            discountLabel.text('Discount Amount (%)');
+          } else if (discountType === 'fixed') {
+            discountField.attr('step', '0.01'); // Fixed amount values can be decimal
+            discountField.attr('placeholder', 'Enter fixed amount (e.g., 10.00)');
+            discountLabel.text('Discount Amount (Fixed)');
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
+
+
+
+
+

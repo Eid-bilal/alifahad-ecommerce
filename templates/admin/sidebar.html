@@ -1,0 +1,148 @@
+{% load static %}
+
+<!-- partial:partials/_sidebar.html -->
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+        <a class="sidebar-brand brand-logo" href=""><img src="{% static 'user/images/icons/dis.png' %}" alt="logo" /></a>
+        <a class="sidebar-brand brand-logo-mini" href=""><img src="{% static 'user/images/icons/dis.png' %}" alt="logo" /></a>
+    </div>
+    <ul class="nav">
+        <!-- Dashboard with dropdown -->
+        <li class="nav-item menu-items">
+            <a class="nav-link" data-toggle="collapse" href="#dashboard-dropdown" aria-expanded="false" aria-controls="dashboard-dropdown">
+                <span class="menu-icon">
+                    <i class="mdi mdi-speedometer"></i>
+                </span>
+                <span class="menu-title">Dashboard</span>
+                <i class="menu-arrow" href="{% url 'order:dashboard' %}"></i>
+            </a>
+            <div class="collapse" id="dashboard-dropdown">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="{% url 'order:dashboard' %}">Overview</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{% url 'user_management' %}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-laptop"></i>
+                </span>
+                <span class="menu-title">Users</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{% url 'product_management' %}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-laptop"></i>
+                </span>
+                <span class="menu-title">Product</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{% url 'category_management' %}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-table-large"></i>
+                </span>
+                <span class="menu-title">Category</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{% url 'order:order_management' %}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-table-large"></i>
+                </span>
+                <span class="menu-title">Order</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{% url 'coupon_list' %}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-table-large"></i>
+                </span>
+                <span class="menu-title">Coupon</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{% url 'custom_ratings_reviews' %}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-table-large"></i>
+                </span>
+                <span class="menu-title">Reviews</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<style>
+    /* White theme for sidebar */
+    .sidebar {
+        background-color: #ffffff;
+        border-right: 1px solid #e0e0e0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .sidebar-brand-wrapper {
+        background-color: #ffffff;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .sidebar .nav .nav-item .nav-link {
+        color: #333333;
+    }
+    .sidebar .nav .nav-item .nav-link .menu-icon {
+        color: #333333;
+    }
+    .sidebar .nav .nav-item .nav-link .menu-title {
+        color: #333333;
+    }
+    .sidebar .nav .nav-item .nav-link .menu-arrow {
+        color: #333333;
+    }
+    .sidebar .nav .nav-item .nav-link:hover {
+        background-color: #f5f7fa;
+        color: #1976d2;
+    }
+    .sidebar .nav .nav-item .nav-link:hover .menu-icon,
+    .sidebar .nav .nav-item .nav-link:hover .menu-title,
+    .sidebar .nav .nav-item .nav-link:hover .menu-arrow {
+        color: #1976d2;
+    }
+    .sidebar .nav .nav-item.active .nav-link {
+        background-color: #e8f0fe;
+        color: #1976d2;
+    }
+    .sidebar .nav .nav-item.active .nav-link .menu-icon,
+    .sidebar .nav .nav-item.active .nav-link .menu-title,
+    .sidebar .nav .nav-item.active .nav-link .menu-arrow {
+        color: #1976d2;
+    }
+    .sidebar .nav.sub-menu {
+        background-color: #f5f7fa;
+    }
+    .sidebar .nav.sub-menu .nav-item .nav-link {
+        color: #333333;
+    }
+    .sidebar .nav.sub-menu .nav-item .nav-link:hover {
+        background-color: #e8f0fe;
+        color: #1976d2;
+    }
+    .sidebar .nav.sub-menu .nav-item .nav-link.active {
+        background-color: #e8f0fe;
+        color: #1976d2;
+    }
+</style>
+        
+
+        
+
+
+
+
+
+
+      
+     
+       
+    </ul>
+</nav>

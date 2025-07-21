@@ -1,0 +1,409 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Category Management</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/jvectormap/jquery-jvectormap.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/flag-icon-css/css/flag-icon.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.theme.default.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+    <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
+
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        /* Style for paginator buttons */
+        .pagination .page-link {
+            border: 2px solid #ffffff;
+            /* White border for the buttons */
+            color: #ffffff;
+            /* White text color */
+            background-color: transparent;
+            /* Transparent background */
+        }
+
+        /* Hover effect for paginator buttons */
+        .pagination .page-link:hover {
+            background-color: #ffffff;
+            /* White background on hover */
+            color: #333333;
+            /* Dark text color on hover */
+            border-color: #ffffff;
+            /* Keep the white border */
+        }
+
+        .pagination .active .page-link {
+            background-color: #ffffff;
+            /* White background for active page */
+            color: #333333;
+            /* Dark text for active page */
+            border-color: #ffffff;
+            /* Keep the white border */
+        }
+        .content-wrapper {
+    background: #ffffff;
+    padding: 1.875rem 1.75rem;
+    width: 100%;
+    -webkit-flex-grow: 1;
+    flex-grow: 1;
+}
+.card-body{
+  background-color: lab(100% 0.01 -0.01);
+}
+    </style>
+
+
+
+</head>
+
+<body>
+    <div class="container-scroller">
+        {% include 'admin/sidebar.html' %}
+        <div class="container-fluid page-body-wrapper">
+            <!-- partial:partials/_navbar.html -->
+            <nav class="navbar p-0 fixed-top d-flex flex-row">
+                <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+                    <a class="navbar-brand brand-logo-mini" href="index.html">
+                        <img src="" alt="logo" />
+                    </a>
+                </div>
+                <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+                    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                        <span class="mdi mdi-menu"></span>
+                    </button>
+                    <ul class="navbar-nav w-100">
+                        <li class="nav-item w-100">
+                            <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search" method="GET" action="{% url 'category_management' %}">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="q"
+                                    placeholder="Search categories"
+                                    value="{{ query|default:'' }}"
+                                >
+                                <button type="submit" class="btn btn-primary ml-2">Search</button>
+                            </form>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="{% url 'admin_logout' %}" class="nav-link btn btn-primary">
+                                Log out
+                            </a>
+                        </li>
+                    </ul>
+                    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+                        <span class="mdi mdi-format-line-spacing"></span>
+                    </button>
+                </div>
+            </nav>
+            
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="mb-4">
+                        <button class="btn btn-success" data-toggle="modal" data-target="#createCategoryModal">
+                            + Create New Category
+                        </button>
+                    </div>
+                    {% block content %}
+                    <div class="row">
+                        <div class="col-12 grid-margin">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Category Details</h4>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Id</th>
+                                                    <th>Category Name</th>
+                                                    <th>Image</th>
+                                                    <th>Unit</th>
+                                                    <th>Offer</th>
+                                                    <th>Created At</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for category in categories %}
+                                                <tr>
+                                                    <td>{{ category.id }}</td>
+                                                    <td>{{ category.category_name }}</td>
+                                                    <td><img src="{{ category.category_image.url }}" alt="IMG"
+                                                            width="50"></td>
+                                                    <td>{{ category.category_unit }}</td>
+                                                    <td>{{ category.category_offer }}</td>
+                                                    <td>{{ category.created_at }}</td>
+                                                    <td>
+                                                        <a href="{% url 'edit_category' category.id %}"
+                                                            class="btn btn-primary">Edit</a>
+                                                        {% if category.is_listed %}
+                                                        <a href="{% url 'toggle_category_listing' category.id %}"
+                                                            class="btn btn-outline-danger btn-sm">Unlist</a>
+                                                        {% else %}
+                                                        <a href="{% url 'toggle_category_listing' category.id %}"
+                                                            class="btn btn-outline-success btn-sm">ReList</a>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endblock %}
+
+                    <!-- Paginator -->
+                    <div class="pagination-container mt-4">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                {% if categories.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ categories.previous_page_number }}"
+                                        aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% for i in categories.paginator.page_range %}
+                                {% if categories.number == i %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">{{ i }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+
+                                {% if categories.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ categories.next_page_number }}"
+                                        aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+
+
+
+
+                <!-- Create New Category Modal -->
+                <div class="modal fade" id="createCategoryModal" tabindex="-1"
+                    aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="createCategoryModalLabel">Create New Category</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                {% if messages %}
+                                <div class="container mt-3">
+                                    {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+
+
+
+
+
+
+                                <form id="createCategoryForm" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {{ form.non_field_errors }}
+                                    <div class="form-group">
+                                        {{ form.category_name.label_tag }}
+                                        {{ form.category_name }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.category_offer.label_tag }}
+                                        {{ form.category_offer }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.category_unit.label_tag }}
+                                        {{ form.category_unit }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.category_image.label_tag }}
+                                        <input type="file" id="image1Input" name="category_image" accept="image/*">
+                                        <div class="image-preview">
+                                            <img id="image1Preview" style="max-width: 100%; margin-top: 10px; display: none;">
+                                            <button type="button" id="cropImage1Button" class="btn btn-primary" style="display: none;">Crop</button>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-success mt-2">Create Category</button>
+                                    <button type="button" class="btn btn-secondary mt-2"
+                                        data-dismiss="modal">Cancel</button>
+                                </form>
+
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Create New Category Modal -->
+
+
+
+        <!-- Modal for Image Cropping -->
+        <div class="modal fade" id="cropImageModal" tabindex="-1" role="dialog" aria-labelledby="cropImageModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="cropImageModalLabel">Crop Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div>
+                  <img id="cropImage" src="" alt="Image to crop" style="max-width: 100%;">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" id="cropImageButton" class="btn btn-primary">Crop</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- End Create New Category Modal -->
+
+      </div>
+      <!-- main-panel ends -->
+    </div>
+
+    <!-- page-body-wrapper ends -->
+  </div>
+
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="{% static 'admin/vendors/js/vendor.bundle.base.js' %}"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="{% static 'admin/vendors/chart.js/Chart.min.js' %}"></script>
+  <script src="{% static 'admin/vendors/progressbar.js/progressbar.min.js' %}"></script>
+  <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap.min.js' %}"></script>
+  <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
+  <script src="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.js' %}"></script>
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="{% static 'admin/js/off-canvas.js' %}"></script>
+  <script src="{% static 'admin/js/hoverable-collapse.js' %}"></script>
+  <script src="{% static 'admin/js/misc.js' %}"></script>
+  <script src="{% static 'admin/js/settings.js' %}"></script>
+  <script src="{% static 'admin/js/todolist.js' %}"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page -->
+  <script src="{% static 'admin/js/dashboard.js' %}"></script>
+  <!-- End custom js for this page -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      let cropper;
+      const cropImageModal = new bootstrap.Modal(document.getElementById('cropImageModal'));
+      const cropImageElement = document.getElementById('cropImage');
+      const cropImageButton = document.getElementById('cropImageButton');
+      const imagePreviews = document.querySelectorAll('.image-preview img');
+      const imageInputs = document.querySelectorAll('input[type="file"]');
+
+      function setupCropper() {
+        if (cropper) {
+          cropper.destroy();
+        }
+        cropper = new Cropper(cropImageElement, {
+          aspectRatio: 1,
+          viewMode: 1,
+          autoCropArea: 1
+        });
+      }
+
+      function handleImageInputChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            cropImageElement.src = e.target.result;
+            setupCropper();
+            cropImageModal.show();
+          }
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function handleCropImage() {
+        const croppedCanvas = cropper.getCroppedCanvas();
+        croppedCanvas.toBlob(function (blob) {
+          const fileInput = document.querySelector('input[type="file"][data-crop]');
+          const dataTransfer = new DataTransfer();
+          const newFile = new File([blob], 'cropped-image.jpg', { type: blob.type });
+          dataTransfer.items.add(newFile);
+          fileInput.files = dataTransfer.files;
+
+          // Update preview image
+          const imgIndex = Array.from(imageInputs).indexOf(fileInput);
+          if (imgIndex > -1) {
+            imagePreviews[imgIndex].src = URL.createObjectURL(newFile);
+            imagePreviews[imgIndex].style.display = 'block';
+          }
+        });
+        cropper.destroy();
+        cropImageModal.hide();
+      }
+
+      imageInputs.forEach((input, index) => {
+        input.addEventListener('change', function (e) {
+          handleImageInputChange(e);
+          this.setAttribute('data-crop', true);
+        });
+      });
+
+      cropImageButton.addEventListener('click', handleCropImage);
+    });
+    alert({{ "errors"}})
+
+  </script>
+
+
+</body>
+
+</html>

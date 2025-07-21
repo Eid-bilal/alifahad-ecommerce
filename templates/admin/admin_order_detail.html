@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Order Management</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
+    <!-- End plugin css for this page -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'admin/vendors/jvectormap/jquery-jvectormap.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/flag-icon-css/css/flag-icon.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.theme.default.min.css' %}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
+    <!-- Include SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        /* Define the keyframes for the twinkling effect */
+/* Define the keyframes for the twinkling effect */
+@keyframes twinkle {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* Smaller red circle with shadow and twinkling effect */
+.twinkle-circle {
+    display: inline-block;
+    width: 10px; /* Smaller size */
+    height: 10px; /* Smaller size */
+    background: radial-gradient(circle, #ff5e5e, #ff0000); /* Lighter gradient */
+    border-radius: 50%;
+    margin-right: 5px;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.4); /* Slightly reduced shadow */
+    animation: twinkle 1s infinite;
+}
+
+/* Light red text without bold */
+.twinkle-text {
+    color: #ff5e5e; /* Lighter red */
+    text-shadow: 0 0 3px rgba(255, 94, 94, 0.5); /* Softer shadow */
+    font-weight: normal; /* Remove bold */
+    animation: twinkle 1s infinite;
+}
+    </style>
+</head>
+<body>
+    <div class="container-scroller">
+        <!-- Include your header and sidebar here -->
+
+        <div class="container-fluid page-body-wrapper">
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="row">
+                        <div class="col-md-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <!-- Go Back Button -->
+                                    <a href="{% url 'admin_order_list' %}" class="btn btn-primary mb-4">
+                                        <i class="mdi mdi-arrow-left"></i> Go Back
+                                    </a>
+
+                                    <div class="row">
+                                        <!-- Order Information Card -->
+                                        <div class="col-md-6">
+                                            <div class="card mt-4">
+                                                <div class="card-body">
+                                                    <h4>Order Information</h4>
+                                                    <p><strong>Order ID:</strong> {{ order.id }}</p>
+                                                    <p><strong>Order Number:</strong> {{ order.order_number}}</p>
+                                                    <p><strong>Payment Type:</strong> {{ order.payment_type }}</p>
+                                                    <p><strong>Payment Status:</strong> {{ order.payment_status }}</p>
+                                                    <p><strong>Total Price:</strong> {{ order.total_price }}</p>
+                                                    <p><strong>Coupon Code:</strong> {{ order.coupon_code }}</p>
+                                                    <p><strong>Created At:</strong> {{ order.created_at }}</p>
+                                                    <p><strong>Estimated Delivery Date:</strong> {{ order.estimated_delivery_date }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Shipping Address Card -->
+                                        <div class="col-md-6">
+                                            <div class="card mt-4">
+                                                <div class="card-body">
+                                                    <h4>Shipping Address</h4>
+                                                    <p><strong>Name:</strong> {{ order.address.name }}</p>
+                                                    <p><strong>Phone Number:</strong> {{ order.address.phone_number }}</p>
+                                                    <p><strong>Alternative Phone Number:</strong> {{ order.address.alternative_phone_number }}</p>
+                                                    <p><strong>Pin Code:</strong> {{ order.address.pincode }}</p>
+                                                    <p><strong>Locality:</strong> {{ order.address.locality }}</p>
+                                                    <p><strong>Landmark:</strong> {{ order.address.landmark }}</p>
+                                                    <p><strong>District:</strong> {{ order.address.district }}</p>
+                                                    <p><strong>State:</strong> {{ order.address.state }}</p>
+                                                    <p><strong>Country:</strong> {{ order.address.country }}</p>
+                                                    <p><strong>Address:</strong> {{ order.address.address }}</p>
+                                                    <p><strong>Address Type:</strong> {{ order.address.address_type }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Product Details Card -->
+                                    <div class="card mt-4">
+                                        <div class="card-body">
+                                            <h4>Product Details</h4>
+                                            <form method="POST" action="">
+                                                {% csrf_token %}
+                                          <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Status</th>
+            {% if item.status == "Requested Return" %}
+            
+            {% else %}
+            <th>Message</th>
+            {% endif %}
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in order_items %}
+        <tr>
+            <td>{{ item.product }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>₹{{ item.price }}</td>
+            <td>
+                <select class="form-control" name="status_{{ item.id }}">
+                    {% if item.status == "Order Pending" %}
+                        <option value="Order Pending" selected>Order Pending</option>
+                        <option value="Order confirmed">Order confirmed</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Out For Delivery">Out For Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    {% elif item.status == "Order confirmed" %}
+                        <option value="Order confirmed" selected>Order confirmed</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Out For Delivery">Out For Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    {% elif item.status == "Shipped" %}
+                        <option value="Shipped" selected>Shipped</option>
+                        <option value="Out For Delivery">Out For Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    {% elif item.status == "Out For Delivery" %}
+                        <option value="Out For Delivery" selected>Out For Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    {% elif item.status == "Delivered" %}
+                        <option value="Delivered" selected>Delivered</option>
+                    {% elif item.status == "Cancelled" %}
+                        <option value="Cancelled" selected>Cancelled</option>
+                    {% elif item.status == "Requested Return" %}
+                        <option value="Approve Returned" selected>Approve Returned</option>
+                        <option value="Reject Returned" selected>Reject Returned</option>
+                    {% elif item.status == "Requested Return" %}
+                    <option value="Approve Returned" selected>Approve Returned</option>
+                    {% elif item.status == "Reject Returned" %}
+                    <option value="Reject Returned" selected>Reject Returned(Delivered)</option>
+                    {% endif %}
+                </select>
+            </td>
+            {% if item.status == "Requested Return" %}
+            <td>
+                <!-- Red circle with twinkling effect -->
+              
+                <strong class="twinkle-text">{{ item.return_reason }}</strong>
+            </td>
+            {% else %}
+            <td>
+                <!-- Red circle with twinkling effect -->
+              
+                <strong class="twinkle-text"></strong>
+            </td>
+        {% endif %}
+        
+            <td>₹{{ item.subtotal_price }}</td>
+        </tr>
+        {% endfor %}
+        
+    </tbody>
+</table>
+<button type="submit" class="btn btn-primary">Update Status</button>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Include your footer here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- plugins:js -->
+    <script src="{% static 'admin/vendors/js/vendor.bundle.base.js' %}"></script>
+    <!-- End plugin js for this page -->
+    <!-- Plugin js for this page -->
+    <script src="{% static 'admin/vendors/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/progressbar.js/progressbar.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
+    <script src="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.js' %}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static 'admin/js/off-canvas.js' %}"></script>
+    <script src="{% static 'admin/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'admin/js/misc.js' %}"></script>
+    <script src="{% static 'admin/js/settings.js' %}"></script>
+    <script src="{% static 'admin/js/todolist.js' %}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <script src="{% static 'admin/js/dashboard.js' %}"></script>
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,587 @@
+{% extends 'user/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.product_name }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css" />
+    
+    <style>
+        /* Product Styles */
+        #discount-percentage {
+            color: #43A047;
+            font-weight: bold;
+        }
+
+        .original-price {
+            /* text-decoration: line-through; */
+            color: #000000;
+            margin-right: 10px;
+        }
+
+        .discounted-price {
+            color: #b10357;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .stock {
+            color: #514701;
+        }
+
+        .out-of-stock {
+            color: #E53935;
+            font-weight: bold;
+        }
+
+        /* Review System Styles */
+        .review-container {
+            margin-top: 30px;
+            margin-bottom: 30px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stars-outer {
+            display: inline-block;
+            position: relative;
+            font-family: FontAwesome;
+            color: #ddd;
+        }
+
+        .stars-outer::before {
+            content: "\f006 \f006 \f006 \f006 \f006";
+        }
+
+        .stars-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            color: #ffc107;
+        }
+
+        .stars-inner::before {
+            content: "\f005 \f005 \f005 \f005 \f005";
+        }
+
+        .rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .rating-input input {
+            display: none;
+        }
+
+        .rating-input label {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            margin: 0 5px;
+            font-size: 30px;
+            color: #ddd;
+            transition: color 0.2s ease;
+        }
+
+        .rating-input label:before {
+            content: '\f005';
+            font-family: FontAwesome;
+        }
+
+        .rating-input input:checked ~ label,
+        .rating-input label:hover,
+        .rating-input label:hover ~ label {
+            color: #ffc107;
+        }
+
+        .rating-bars .progress {
+            border-radius: 20px;
+            background-color: #eee;
+            height: 12px;
+        }
+
+        .rating-bars .progress-bar {
+            border-radius: 20px;
+        }
+
+        .review-item {
+            transition: transform 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .review-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .review-item-content {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .badge-verified {
+            background-color: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .modal-content {
+            border-radius: 8px;
+        }
+
+        .modal-header {
+            background-color: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .btn-write-review {
+            padding: 10px 30px;
+            font-weight: 500;
+            border-radius: 20px;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.0.0/dist/panzoom.min.js"></script>
+</head>
+
+<body>
+    <section class="sec-product-detail bg0 p-t-65 p-b-60">
+        <div class="container">
+            <!-- Product Images Section -->
+            <div class="row">
+                <div class="col-md-6 col-lg-7 p-b-30">
+                    <div class="p-l-25 p-r-30 p-lr-0-lg">
+                        <div class="wrap-slick3 flex-sb flex-w">
+                            <div class="wrap-slick3-dots"></div>
+                            <div class="wrap-slick3-arrows flex-sb-m flex-w"></div>
+
+                            <div class="slick3 gallery-lb">
+                                <div class="item-slick3" data-thumb="{{ product.image_1.url }}">
+                                    <div class="wrap-pic-w pos-relative">
+                                        <img src="{{ product.image_1.url }}" alt="IMG-PRODUCT" id="image1">
+                                    </div>
+                                </div>
+
+                                <div class="item-slick3" data-thumb="{{ product.image_2.url }}">
+                                    <div class="wrap-pic-w pos-relative">
+                                        <img src="{{ product.image_2.url }}" alt="IMG-PRODUCT" id="image2">
+                                    </div>
+                                </div>
+
+                                <div class="item-slick3" data-thumb="{{ product.image_3.url }}">
+                                    <div class="wrap-pic-w pos-relative">
+                                        <img src="{{ product.image_3.url }}" alt="IMG-PRODUCT" id="image3">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Details Section -->
+                <div class="col-md-6 col-lg-5 p-b-30">
+                    <div class="p-r-50 p-t-5 p-lr-0-lg">
+                        <h4 class="mtext-105 cl2 js-name-detail p-b-14">
+                            {{ product.product_name }}
+                        </h4>
+                        <span class="mtext-106 cl2">
+                            ₹<span class="original-price" id="variant-price">{{ product.variants.price }}</span>
+                            <span class="discount-percentage" id="discount-percentage">{{ offer }}% off</span>
+                        </span>
+                        <span>
+                            <p class="stock" id="stock"></p>
+                        </span>
+                        <p class="stext-102 cl3 p-t-23">
+                            {{ product.description }}
+                        </p>
+
+                        <!-- Variant Selector -->
+                        <form method="post" action="{% url 'user:add_to_cart' %}">
+                            {% csrf_token %}
+                            <label for="variant">Select Variant:</label>
+                            <select id="variant" name="variant_id" class="form-control" required onchange="updatePrice()">
+                                {% for variant in product.variants.all %}
+                                <option value="{{ variant.id }}" 
+                                        data-price="{{ variant.price }}"
+                                        data-stock="{{ variant.stock }}" 
+                                        data-discount="{{ variant.product_price_after }}"
+                                        data-percentage="{{ variant.highest_offer }}">
+                                    {{ variant.size }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1" max="1" hidden>
+                            <button type="submit" class="btn btn-primary mt-3">Add to Cart</button>
+                        </form>
+                        
+                        <!-- Add to Wishlist Button -->
+                        <button type="button" id="wishlist-button" class="btn btn-secondary mt-3" onclick="addToWishlist()">
+                            Add to Wishlist
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Review Section -->
+                <!-- Review Section -->
+                
+<div class="col-12">
+    <div class="review-container p-4">
+        <h3 class="mb-4 pb-2 border-bottom">Customer Reviews</h3>
+
+        <!-- Overall Rating Summary -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="text-center p-4 border rounded bg-light">
+                    <h4 class="display-4 mb-1">{{ average_rating|default:"0.0" }}</h4>
+                    <div class="stars-outer mb-2">
+                        <div class="stars-inner" style="width: {{ rating_percentage.5 }}%"></div>
+                    </div>
+                    <p class="text-muted mb-0">Based on {{ total_reviews }} reviews</p>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="rating-bars p-3">
+                    {% for i in "54321"|make_list %}
+                    <div class="rating-bar d-flex align-items-center mb-3">
+                        <span class="mr-3" style="min-width: 60px">{{ i }} stars</span>
+                        <div class="progress flex-grow-1">
+                            <div class="progress-bar bg-warning" style="width: {{ rating_percentage.i|default:0 }}%"></div>
+                            <!-- use load custom filters get_item dot i -->
+                            
+                        </div>
+                        <span class="ml-3" style="min-width: 40px">{{ rating_percentage.i|default:0|floatformat:2 }}</span>
+                        
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Write Review Button -->
+        <div class="text-center mb-4">
+            <button class="btn btn-primary btn-write-review" data-toggle="modal" data-target="#reviewModal">
+                Write a Review
+            </button>
+        </div>
+
+        <!-- Review List -->
+        <div class="reviews-list">
+            {% for review in reviews %}
+            <div class="review-item">
+                <div class="review-item-content">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="stars-outer" style="font-size: 14px;">
+                            <div class="stars-inner" style="width: {{ review.rating_percentage }}%"></div>
+                        </div>
+                        <small class="text-muted">{{ review.created_at|date:"F d, Y" }}</small>
+                    </div>
+                    <h5 class="mb-2">{{ review.title }}</h5>
+                    <p class="mb-2">{{ review.content }}</p>
+                    <div class="d-flex align-items-center">
+                        <small class="text-muted">By {{ review.user.username }}</small>
+                        {% if review.verified_purchase %}
+                        <span class="badge badge-verified ml-2">Verified Purchase</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+                        <!-- Review Modal -->
+                        <div class="modal fade" id="reviewModal" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Write a Review</h5>
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span>&times;</span>
+                                        </button>
+                                    </div>
+                                    <form id="reviewForm" method="post" action="{% url 'submit_review' %}">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label>Rating</label>
+                                                <div class="rating-input">
+                                                    {% for i in "54321"|make_list %}
+                                                    <input 
+                                                        type="radio" 
+                                                        id="star{{ i }}" 
+                                                        name="score" 
+                                                        value="{{ i }}" 
+                                                        required
+                                                        onclick="trackRating({{i}})">
+                                                    <label for="star{{ i }}"></label> <!-- Display star symbol -->
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>Title</label>
+                                                <input type="text" class="form-control" name="title" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Review</label>
+                                                <textarea class="form-control" name="comment" rows="4" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </section>
+    
+
+
+
+    <script>
+        function updatePrice() {
+            const variantSelect = document.getElementById("variant");
+            const selectedOption = variantSelect.options[variantSelect.selectedIndex];
+            const price = selectedOption.getAttribute("data-price");
+            const stock = selectedOption.getAttribute("data-stock");
+            const discountedPrice = selectedOption.getAttribute("data-discount");
+
+
+            document.getElementById("variant-price").innerText = price;
+            document.getElementById("quantity").max = stock;
+            document.getElementById('discounted-price').textContent = `₹${discountedPrice}`;
+
+
+            if (stock == 0) {
+                document.getElementById('stock').textContent = "Out of Stock";
+                document.getElementById('stock').classList.add('out-of-stock');
+            } else {
+                document.getElementById('stock').textContent = `Stock: ${stock}`;
+                document.getElementById('stock').classList.remove('out-of-stock');
+            }
+
+        }
+
+        document.addEventListener("DOMContentLoaded", updatePrice);
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            {% if messages %}
+            {% for message in messages %}
+            Swal.fire({
+                icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}",
+                title: "{{ message }}",
+                showConfirmButton: false,
+                timer: 3000
+            });
+            {% endfor %}
+            {% endif %}
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+
+
+    <!-- SweetAlert Script -->
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function addToWishlist() {
+            const variantId = document.getElementById('variant').value;
+            console.log(variantId, "this is my variant id")
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch("{% url 'add_to_wishlist' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ variant_id: variantId }),
+            })
+
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire('Success', data.message, 'success');
+                    } else if (data.status === 'info') {
+                        Swal.fire('Info', data.message, 'info');
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding to wishlist:', error);
+                    Swal.fire('Error', 'Something went wrong while adding to the wishlist.', 'error');
+                });
+        }
+    </script>
+
+    <script> //for zooming
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Panzoom for each image
+            const panzoom1 = Panzoom(document.getElementById('image1'), {
+                maxScale: 3, // Max zoom level (3x)
+                minScale: 1, // Min zoom level (1x - no zoom)
+                contain: 'outside', // Prevents image from going outside the container
+            });
+
+            const panzoom2 = Panzoom(document.getElementById('image2'), {
+                maxScale: 3,
+                minScale: 1,
+                contain: 'outside',
+            });
+
+            const panzoom3 = Panzoom(document.getElementById('image3'), {
+                maxScale: 3,
+                minScale: 1,
+                contain: 'outside',
+            });
+
+            // Optional: Add mouse wheel zoom
+            document.querySelectorAll('.item-slick3 img').forEach(img => {
+                img.addEventListener('wheel', event => {
+                    if (event.deltaY > 0) {
+                        panzoom1.zoomOut();
+                    } else {
+                        panzoom1.zoomIn();
+                    }
+                });
+            });
+        });
+
+    </script>
+
+
+
+    <!-- Add this to your existing script section -->
+    <script>
+        
+       
+    document.addEventListener('DOMContentLoaded', function () {
+        const ratingCount = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }; // Initialize count for each star
+
+        // Handle star clicks to update the count
+        document.querySelectorAll('input[name="score"]').forEach(star => {
+            star.addEventListener('change', function () {
+                const selectedRating = parseInt(this.value); // Get the selected rating
+                ratingCount[selectedRating] += 1; // Increment the count for the clicked star
+                console.log(`Rating ${selectedRating} clicked ${ratingCount[selectedRating]} times`);
+
+                // Log the full count for all stars
+                console.log('Full Count:', ratingCount);
+
+                // Update the selected score (the one clicked by the user)
+                console.log('Selected score:', selectedRating);
+            });
+        });
+
+        // Handle review form submission
+        const reviewForm = document.getElementById('reviewForm');
+        reviewForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const productId = {{ product.id }};  // Pass product ID dynamically
+
+            const selectedScore = formData.get('score'); // Get the selected score from the form
+
+            // Prepare the data to send
+            const data = {
+                product_id: productId,
+                score: selectedScore, // Send the selected score
+                title: formData.get('title'),
+                comment: formData.get('comment'),
+            };
+
+            // Send the data using fetch API
+            fetch("{% url 'submit_review' %}", {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire('Success', 'Your review has been submitted successfully!', 'success');
+                        $('#reviewModal').modal('hide');
+                        location.reload(); // Reload to show the new review
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Something went wrong while submitting your review.', 'error');
+                });
+        });
+    });
+
+
+
+    </script>
+    <script>
+        const starCounts = {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0
+        };
+        function trackRating(rating) {
+            starCounts[rating]++;
+            console.log(`Rating ${rating} clicked ${starCounts[rating]} times`);
+
+            console.log('Full Count: ', starCounts);
+        }
+    </script>
+</body>
+
+</html>
+
+{% endblock %}

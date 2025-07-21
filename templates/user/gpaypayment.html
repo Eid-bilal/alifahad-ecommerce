@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .payment-section {
+            display: none; /* Hide all payment sections by default */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Payment Options</h2>
+
+    <!-- Selected Order Summary (Optional) -->
+    <div class="mb-4">
+        <h5>Order Summary</h5>
+        <p>Order Number: <strong>#12345</strong></p>
+        <p>Total Amount: <strong>$100.00</strong></p>
+    </div>
+
+    <!-- Payment Method Selection -->
+    <h5 class="mb-3">Choose Your Payment Method</h5>
+
+    <!-- Google Pay Option -->
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="paymentMethod" id="googlePay" value="googlePay" checked>
+        <label class="form-check-label" for="googlePay">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_Pay_icon.svg" alt="Google Pay" width="50" class="me-2">
+            Google Pay
+        </label>
+    </div>
+
+    <!-- Other UPI Option -->
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="paymentMethod" id="otherUPI" value="otherUPI">
+        <label class="form-check-label" for="otherUPI">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Unified_Payments_Interface_Logo.png" alt="UPI" width="50" class="me-2">
+            Other UPI (PhonePe, Paytm, etc.)
+        </label>
+    </div>
+
+    <!-- Other Transaction Option -->
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="paymentMethod" id="otherTransaction" value="otherTransaction">
+        <label class="form-check-label" for="otherTransaction">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ed/Credit_Card_icon.svg" alt="Other Transactions" width="50" class="me-2">
+            Other Transactions (Credit/Debit Card)
+        </label>
+    </div>
+
+    <!-- Google Pay Payment Section -->
+    <div id="googlePaySection" class="payment-section mt-4">
+        <h5>Pay with Google Pay</h5>
+        <p>Scan the QR code or enter your payment details below:</p>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/QR_code_for_googlesearch.svg/512px-QR_code_for_googlesearch.svg.png" alt="Google Pay QR Code" width="200">
+        <div class="form-group mt-3">
+            <label for="googlePayNumber">Google Pay Number</label>
+            <input type="text" class="form-control" id="googlePayNumber" placeholder="Enter Google Pay Number">
+        </div>
+    </div>
+
+    <!-- Other UPI Payment Section -->
+    <div id="otherUPISection" class="payment-section mt-4">
+        <h5>Pay with Other UPI</h5>
+        <p>Please enter your UPI ID:</p>
+        <div class="form-group">
+            <label for="upiID">UPI ID</label>
+            <input type="text" class="form-control" id="upiID" placeholder="Enter your UPI ID">
+        </div>
+    </div>
+
+    <!-- Other Transaction Section -->
+    <div id="otherTransactionSection" class="payment-section mt-4">
+        <h5>Pay with Credit/Debit Card</h5>
+        <p>Please enter your card details:</p>
+        <div class="form-group">
+            <label for="cardNumber">Card Number</label>
+            <input type="text" class="form-control" id="cardNumber" placeholder="Enter Card Number">
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="expiryDate">Expiry Date</label>
+                <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="cvv">CVV</label>
+                <input type="text" class="form-control" id="cvv" placeholder="CVV">
+            </div>
+        </div>
+    </div>
+
+    <!-- Proceed Button -->
+    <button type="submit" class="btn btn-success mt-4">Proceed to Payment</button>
+
+    <!-- Help Section -->
+    <div class="text-center mt-5">
+        <p>If you have any questions, <a href="#">contact our support team</a>.</p>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // Show the corresponding payment section based on selected payment method
+    $('input[name="paymentMethod"]').on('change', function() {
+        $('.payment-section').hide(); // Hide all payment sections
+        if ($(this).val() === 'googlePay') {
+            $('#googlePaySection').show(); // Show Google Pay section
+        } else if ($(this).val() === 'otherUPI') {
+            $('#otherUPISection').show(); // Show Other UPI section
+        } else if ($(this).val() === 'otherTransaction') {
+            $('#otherTransactionSection').show(); // Show Other Transaction section
+        }
+    });
+
+    // Initially show the Google Pay section
+    $('#googlePaySection').show();
+</script>
+
+</body>
+</html>

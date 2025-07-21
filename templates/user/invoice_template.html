@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 150px;
+        }
+        .header h1 {
+            margin: 10px 0;
+            font-size: 24px;
+        }
+        .invoice-details, .shipping-address, .order-items {
+            margin-bottom: 20px;
+        }
+        .invoice-details p, .shipping-address p, .order-items p {
+            margin: 5px 0;
+        }
+        .order-items table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .order-items th, .order-items td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .order-items th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="static/user/images/icons/dis.png" alt="Logo">
+            <h1>Invoice</h1>
+        </div>
+        
+        <div class="invoice-details">
+            <h2>Invoice Details</h2>
+            <p><strong>Order ID:</strong> {{ order.serial_number }}</p>
+            <p><strong>Order Date:</strong> {{ order.order_date }}</p>
+            <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+            <p><strong>Payment Status:</strong> {{ order.payment_status }}</p>
+            <p><strong>Total Amount:</strong> Rs. {{ order.total_amount }}</p>
+            <p><strong>Discount:</strong> Rs. {{ order.coupon_discount|default:0 }}</p>
+        </div>
+        
+        <div class="shipping-address">
+            <h2>Shipping Address</h2>
+            <p>{{ order.address.full_name }}</p>
+            <p>{{ order.address.area }}, {{ order.address.city }}</p>
+            <p>{{ order.address.state }} - {{ order.address.pincode }}</p>
+            <p><strong>Phone:</strong> {{ order.address.phone_no }}</p>
+        </div>
+        
+        <div class="order-items">
+            <h2>Order Items</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Size</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                        <tr>
+                            <td>{{ item.product_added.product.product_name }}</td>
+                            <td>{{ item.size }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>₹{{ item.final_product_price }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>Thank you for your order!</p>
+        </div>
+    </div>
+</body>
+</html>

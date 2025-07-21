@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add to Order</title>
+</head>
+<body>
+    <h1>Add to Order</h1>
+
+    <h2>Your Cart</h2>
+    <ul>
+        {% for item in cart_items %}
+        <li>{{ item.variant.product.product_name }} - {{ item.quantity }} x ₹{{ item.variant.price }} = ₹{{ item.variant.price|floatformat:2 }}</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Total Amount: ₹{{ total_amount|floatformat:2 }}</h3>
+
+    <h2>Select Address</h2>
+    <form method="POST" action="{% url 'confirm_order' %}">
+        {% csrf_token %}
+        {% for address in addresses %}
+        <input type="radio" name="address" value="{{ address.id }}" id="address_{{ address.id }}">
+        <label for="address_{{ address.id }}">{{ address.address_line_1 }}, {{ address.city }}, {{ address.state }}, {{ address.zipcode }}</label><br>
+        {% endfor %}
+
+        <h2>Select Payment Method</h2>
+        <input type="radio" name="payment_method" value="COD" id="payment_cod">
+        <label for="payment_cod">Cash on Delivery</label><br>
+
+        <button type="submit">Confirm Order</button>
+    </form>
+</body>
+</html>

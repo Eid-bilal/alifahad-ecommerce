@@ -1,0 +1,245 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Edit Product</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'admin/vendors/jvectormap/jquery-jvectormap.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/flag-icon-css/css/flag-icon.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.theme.default.min.css' %}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <!-- Custom CSS for White Theme -->
+    <style>
+        body, .container-scroller, .page-body-wrapper, .main-panel, .content-wrapper {
+            background-color: #fbf6f6;
+            color: #333333;
+        }
+        .card {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+        }
+        .card-title, .modal-title {
+            color: #100f0f;
+        }
+        .table {
+            background-color: #ffffff;
+        }
+        .table th, .table td {
+            border-color: #0c0b0b;
+            color: #333333;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .modal-content {
+            background-color: #827f7f;
+            color: #333333;
+        }
+        .form-control {
+            background-color: #ffffff;
+            border: 1px solid #ced4da;
+            color: #333333;
+        }
+        .form-control:focus {
+            background-color: #ffffff;
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        .navbar, .sidebar {
+            background-color: #f8f9fa;
+        }
+        .sidebar .nav .nav-item .nav-link {
+            color: #333333;
+        }
+        .sidebar .nav .nav-item.active > .nav-link {
+            background-color: #e9ecef;
+            color: #007bff;
+        }
+        .card .card-title {
+        color: #0e0d0d;
+        margin-bottom: 1.125rem;
+        text-transform: capitalize;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-scroller">
+        {% include 'admin/sidebar.html' %}
+        <div class="container-fluid page-body-wrapper">
+            {% include 'admin/navbar.html' %}
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="row">
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Edit Product: {{ product.product_name }}</h4>
+                                    {% if messages %}
+                                    <div class="alert alert-danger">
+                                        {% for message in messages %}
+                                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <!-- Product Details Form -->
+                                    <h5 class="card-title">Update Product Details</h5>
+                                    <form method="POST" enctype="multipart/form-data" action="{% url 'edit_product' product.id %}">
+                                        {% csrf_token %}
+                                        {{ form.as_p }}
+                                        <button type="submit" class="btn btn-primary">Update Product</button>
+                                    </form>
+                                    <!-- Variant Management -->
+                                    <h5 class="card-title mt-4">Manage Variants</h5>
+                                    <div class="mb-4">
+                                        <button class="btn btn-success" data-toggle="modal" data-target="#createProductModal">
+                                            + Add New Size
+                                        </button>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 grid-margin">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h4 class="card-title">Product Variants</h4>
+                                                    <div class="table-responsive">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Size</th>
+                                                                    <th>Unit</th>
+                                                                    <th>Stock</th>
+                                                                    <th>Price</th>
+                                                                    <th>Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% if variants %}
+                                                                {% for variant in variants %}
+                                                                <tr>
+                                                                    <td>{{ variant.size.size_name }}</td>
+                                                                    <td>{{ variant.size.get_unit_display }}</td>
+                                                                    <td>{{ variant.stock }}</td>
+                                                                    <td>{{ variant.price }}</td>
+                                                                    <td>
+                                                                        <a href="{% url 'update_variant' variant.id %}" class="btn btn-primary">Edit Variant</a>
+                                                                    </td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                                {% else %}
+                                                                <tr>
+                                                                    <td colspan="5" class="text-center">No variants found</td>
+                                                                </tr>
+                                                                {% endif %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Modal for Adding Size Variant -->
+                                    <div class="modal fade" id="createProductModal" tabindex="-1" aria-labelledby="createProductModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="createProductModalLabel">Add New Size</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {% if messages %}
+                                                    <div class="container mt-3">
+                                                        {% for message in messages %}
+                                                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                                            {{ message }}
+                                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                                <span aria-hidden="true">×</span>
+                                                            </button>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% endif %}
+                                                    <form id="createProductForm" method="POST" enctype="multipart/form-data" action="{% url 'add_variant' product.id %}">
+                                                        {% csrf_token %}
+                                                        <div class="form-group">
+                                                            <label for="size_name">Size</label>
+                                                            <input type="number" class="form-control" id="size_name" name="size_name" min="0" step="any" required placeholder="Enter size (e.g., 100)">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="unit">Unit</label>
+                                                            <select class="form-control" id="unit" name="unit" required>
+                                                                <option value="" disabled selected>Select a unit</option>
+                                                                {% for value, label in unit_choices %}
+                                                                <option value="{{ value }}">{{ label }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="price">Price</label>
+                                                            <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required placeholder="Enter price (e.g., 10.99)">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="stock">Stock</label>
+                                                            <input type="number" class="form-control" id="stock" name="stock" min="0" required placeholder="Enter stock quantity">
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">Add Size Variant</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- plugins:js -->
+    <script src="{% static 'admin/vendors/js/vendor.bundle.base.js' %}"></script>
+    <!-- Plugin js for this page -->
+    <script src="{% static 'admin/vendors/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/progressbar.js/progressbar.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap.min.js' %}"></script>
+    <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
+    <script src="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.js' %}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static 'admin/js/off-canvas.js' %}"></script>
+    <script src="{% static 'admin/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'admin/js/misc.js' %}"></script>
+    <script src="{% static 'admin/js/settings.js' %}"></script>
+    <script src="{% static 'admin/js/todolist.js' %}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <script src="{% static 'admin/js/dashboard.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Payment Options</h2>
+
+    <!-- Selected Order Summary (Optional) -->
+    <div class="mb-4">
+        <h5>Order Summary</h5>
+        <p>Order Number: <strong>#12345</strong></p>
+        <p>Total Amount: <strong>$100.00</strong></p>
+    </div>
+
+    <!-- Payment Method Selection -->
+    <h5 class="mb-3">Choose Your Payment Method</h5>
+
+    <!-- Google Pay Option -->
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="paymentMethod" id="googlePay" checked>
+        <label class="form-check-label" for="googlePay">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_Pay_icon.svg" alt="Google Pay" width="50" class="me-2">
+            Google Pay
+        </label>
+    </div>
+
+    <!-- Other UPI Option -->
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="paymentMethod" id="otherUPI">
+        <label class="form-check-label" for="otherUPI">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Unified_Payments_Interface_Logo.png" alt="UPI" width="50" class="me-2">
+            Other UPI (PhonePe, Paytm, etc.)
+        </label>
+    </div>
+
+    <!-- Other Transaction Option -->
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="paymentMethod" id="otherTransaction">
+        <label class="form-check-label" for="otherTransaction">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ed/Credit_Card_icon.svg" alt="Other Transactions" width="50" class="me-2">
+            Other Transactions (Credit/Debit Card)
+        </label>
+    </div>
+
+    <!-- Proceed Button -->
+    <button type="submit" class="btn btn-success mt-4">Proceed to Payment</button>
+
+    <!-- Help Section -->
+    <div class="text-center mt-5">
+        <p>If you have any questions, <a href="#">contact our support team</a>.</p>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

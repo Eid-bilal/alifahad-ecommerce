@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Your Cart</h1>
+        <div>
+            {% if messages %}
+            {% for error in messages %}
+            <p style="color: red;">{{error}}</p>
+
+            {% endfor %}
+
+            {% endif %}
+        </div>
+        {% if items %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product Image</th>
+                    <th>Product</th>
+                    <th>Size</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total for Product</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td><img src="{{ item.variant.product.image_1.url }}" alt="{{ item.variant.product.product_name }}" style="width: 100px;"></td>
+                    <td>{{ item.variant.product.product_name }}</td>
+                    <td>{{ item.variant.size }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ item.variant.price }}</td>
+                    <td>₹{{ item.total_price|floatformat:2 }}</td>
+                    <td>
+                        <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger">Remove</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="5" class="text-right"><strong>Grand Total</strong></td>
+                    <td><strong>₹{{ grand_total|floatformat:2 }}</strong></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="{% url 'checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+        {% else %}
+        <p>Your cart is empty.</p>
+        {% endif %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
+

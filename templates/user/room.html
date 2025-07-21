@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 h-screen">
+    <div class="container mx-auto p-4 h-full flex flex-col">
+        <!-- Header -->
+        <div class="bg-white shadow rounded-t-lg p-4 mb-2">
+            <h1 class="text-xl font-semibold text-gray-800">
+                <i class="fas fa-comments mr-2"></i>
+                Room: {{ room_name }}
+            </h1>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="flex-1 bg-white shadow rounded-b-lg flex flex-col">
+            <!-- Messages Area -->
+            <div id="chat-log" class="flex-1 p-4 overflow-y-auto space-y-4">
+                {% for message in messages %}
+                <div class="flex {% if message.user.is_superuser %}justify-end{% else %}justify-start{% endif %} gap-2 items-start">
+                    {% if not message.user.is_superuser %}
+                    <!-- User Profile -->
+                    <div class="flex flex-col items-center">
+                        <img src="{{ message.user.profile.image.url|default:'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2.webp' }}" 
+                             alt="{{ message.user.username }}" 
+                             class="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
+                             onerror="this.onerror=null; this.src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2.webp';">
+                        <span class="text-xs text-gray-500 mt-1">{{ message.user.username }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Message Bubble -->
+                    <div class="max-w-[70%]">
+                        <div class="{% if message.user.is_superuser %}bg-blue-500 text-white rounded-l-lg rounded-tr-lg{% else %}bg-gray-200 text-gray-800 rounded-r-lg rounded-tl-lg{% endif %} px-4 py-2">
+                            <div class="text-sm">{{ message.message }}</div>
+                            <div class="text-xs mt-1 {% if message.user.is_superuser %}text-blue-100{% else %}text-gray-500{% endif %}">
+                                {{ message.timestamp|date:"g:i A" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if message.user.is_superuser %}
+                    <!-- Superuser Profile -->
+                    <div class="flex flex-col items-center">
+                        <img src="{{ message.user.profile.image.url|default:'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp' }}" 
+                             alt="{{ message.user.username }}" 
+                             class="w-10 h-10 rounded-full object-cover border-2 border-blue-200"
+                             onerror="this.onerror=null; this.src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp';">
+                        <span class="text-xs text-gray-500 mt-1">{{ message.user.username }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Input Area -->
+            <div class="border-t p-4 bg-gray-50">
+                <div class="flex space-x-4">
+                    <input id="chat-message-input" 
+                           class="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                           type="text" 
+                           placeholder="Type your message...">
+                    <button id="chat-message-submit" 
+                            class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-paper-plane mr-2"></i>Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chatSocket;
+        const roomName = "{{ room_name }}";
+
+        function connect() {
+            chatSocket = new WebSocket(
+                `ws://${window.location.host}/ws/chat/${roomName}/`
+            );
+
+            chatSocket.onopen = function(e) {
+                console.log("WebSocket connection opened.");
+            };
+
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                const chatLog = document.querySelector('#chat-log');
+                const messageContainer = document.createElement('div');
+                const isStaff = data.is_superuser || false;
+                
+                messageContainer.className = `flex ${isStaff ? 'justify-end' : 'justify-start'} gap-2 items-start`;
+                
+                const currentTime = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                
+                const profileHtml = `
+                    <div class="flex flex-col items-center">
+                        <img src="${data.profile_image || (isStaff ? 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp' : 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2.webp')}" 
+                             alt="${data.user}" 
+                             class="w-10 h-10 rounded-full object-cover border-2 ${isStaff ? 'border-blue-200' : 'border-gray-200'}"
+                             onerror="this.onerror=null; this.src='${isStaff ? 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp' : 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2.webp'}';">
+                        <span class="text-xs text-gray-500 mt-1">${data.user}</span>
+                    </div>`;
+
+                messageContainer.innerHTML = `
+                    ${!isStaff ? profileHtml : ''}
+                    <div class="max-w-[70%]">
+                        <div class="${isStaff ? 'bg-blue-500 text-white rounded-l-lg rounded-tr-lg' : 'bg-gray-200 text-gray-800 rounded-r-lg rounded-tl-lg'} px-4 py-2">
+                            <div class="text-sm">${data.message}</div>
+                            <div class="text-xs mt-1 ${isStaff ? 'text-blue-100' : 'text-gray-500'}">${currentTime}</div>
+                        </div>
+                    </div>
+                    ${isStaff ? profileHtml : ''}
+                `;
+                
+                chatLog.appendChild(messageContainer);
+                chatLog.scrollTop = chatLog.scrollHeight;
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly. Reconnecting...');
+                setTimeout(connect, 1000);
+            };
+        }
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value.trim();
+            
+            if (!message) return;
+
+            if (chatSocket.readyState === WebSocket.OPEN) {
+                chatSocket.send(JSON.stringify({
+                    'message': message
+                }));
+                messageInputDom.value = '';
+            } else {
+                console.error('WebSocket is not open. Current state:', chatSocket.readyState);
+            }
+        };
+
+        // Initiate the connection
+        connect();
+
+        // Scroll to bottom on load
+        window.onload = function() {
+            const chatLog = document.querySelector('#chat-log');
+            chatLog.scrollTop = chatLog.scrollHeight;
+        };
+    </script>
+</body>
+</html>
