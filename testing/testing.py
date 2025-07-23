@@ -1,2 +1,0 @@
-a =" bilal"
-print(a)

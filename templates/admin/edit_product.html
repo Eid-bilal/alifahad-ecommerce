@@ -40,6 +40,9 @@
         margin-bottom: 1.125rem;
         text-transform: capitalize;
         }
+        .card{
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -70,6 +73,7 @@
                                     <form id="editProductForm" method="POST" enctype="multipart/form-data" action="{% url 'edit_product' product.id %}">
                                         {% csrf_token %}
                                         <div class="form-group">
+                                            
                                             {{ form.product_name.label_tag }}
                                             {{ form.product_name }}
                                             {% if form.product_name.errors %}
@@ -77,6 +81,7 @@
                                             {% endif %}
                                         </div>
                                         <div class="form-group">
+                                            
                                             {{ form.description.label_tag }}
                                             {{ form.description }}
                                             {% if form.description.errors %}

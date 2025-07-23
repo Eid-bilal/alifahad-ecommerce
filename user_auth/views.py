@@ -27,7 +27,7 @@ from django.db import models
 # Create your views here.
 
 def redirect_to_home(request):
-    return redirect('user/home')
+    return redirect('user/login')
 
 #=========================================================================================================================#
 @never_cache
@@ -394,7 +394,7 @@ from django.shortcuts import redirect
 
 def user_logout(request):
     logout(request)  # Logs out the user
-    return redirect('home')  # Redirects to the homepage or any other page
+    return redirect('login')  # Redirects to the homepage or any other page
 
 #=====================================================================================================
 import re

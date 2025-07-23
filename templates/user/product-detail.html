@@ -25,8 +25,8 @@
         }
 
         .original-price {
-            /* text-decoration: line-through; */
-            color: #000000;
+            text-decoration: line-through;
+            color: #888;
             margin-right: 10px;
         }
 
@@ -208,6 +208,7 @@
                         </h4>
                         <span class="mtext-106 cl2">
                             ₹<span class="original-price" id="variant-price">{{ product.variants.price }}</span>
+                            <span class="discounted-price" id="discounted-price">{{ product.variants.product_price_after }}</span>
                             <span class="discount-percentage" id="discount-percentage">{{ offer }}% off</span>
                         </span>
                         <span>

@@ -49,27 +49,28 @@
                                 {% endif %}
 
 
-                                    <form method="POST" action="{% url 'update_variant' variant.id %}">
-                                        {% csrf_token %}
-                                        <div class="form-group">
-                                            <label for="size">Size:</label>
-                                            <select id="size" name="size" class="form-control" required>
-                                                {% for value, display in size_choices %}
-                                                <option value="{{ value }}" {% if variant.size == value %}selected{% endif %}>{{ display }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="stock">Price:</label>
-                                            <input type="number" class="form-control" id="price" name="price" value="{{ variant.price }}" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="stock">Stock:</label>
-                                            <input type="number" class="form-control" id="stock" name="stock" value="{{ variant.stock }}" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Update Variant</button>
-                                        <a href="{% url 'variant_list' product_id=variant.product.id %}" class="btn btn-secondary">Cancel</a>
-                                    </form>
+                                    <form method="POST">
+    {% csrf_token %}
+    <label for="size">Size:</label>
+    <input type="text" name="size" value="{{ variant.size.size_name }}" required>
+    
+    <label for="unit">Unit:</label>
+    <select name="unit" required>
+        {% for unit_value, unit_label in size_choices.units %}
+            <option value="{{ unit_value }}" {% if unit_value == variant.size.unit %}selected{% endif %}>
+                {{ unit_label }}
+            </option>
+        {% endfor %}
+    </select>
+    
+    <label for="price">Price:</label>
+    <input type="number" step="0.01" name="price" value="{{ variant.price }}" required>
+    
+    <label for="stock">Stock:</label>
+    <input type="number" name="stock" value="{{ variant.stock }}" required>
+    
+    <button type="submit">Update Variant</button>
+</form>
                                 </div>
                         </div>
                     </div>

@@ -36,6 +36,7 @@
         background-color: #ffffff;
         border-bottom: 1px solid #e5e7eb;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        transition: background-color 0.3s ease;
     }
     .navbar-brand-wrapper {
         background-color: #ffffff;
@@ -52,9 +53,13 @@
         color: #1f2937;
     }
     .navbar-nav .nav-link {
-        color: #f2f4f7;
+        color: #1f2937; /* Changed to a darker color for better visibility */
         font-size: 1rem;
         font-weight: 500;
+        transition: color 0.3s ease;
+    }
+    .navbar-nav .nav-link:hover {
+        color: #2563eb; /* Change color on hover */
     }
     .navbar-nav .nav-link.btn-primary {
         background-color: #3157ab;
@@ -64,6 +69,7 @@
         border-radius: 0.375rem;
         font-size: 0.875rem;
         font-weight: 500;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
     }
     .navbar-nav .nav-link.btn-primary:hover {
         background-color: #1d4ed8;
@@ -87,11 +93,11 @@
         outline: none;
     }
     .navbar .navbar-menu-wrapper .search input {
-    background: #fdfdfe;
-    padding: 13px 20px 11px 20px;
-    border: 1px solid #2c2e33;
+        background: #fdfdfe;
+        padding: 13px 20px 11px 20px;
+        border: 1px solid #2c2e33;
     }
-    .sidebar .sidebar-brand-wrapper{
+    .sidebar .sidebar-brand-wrapper {
         background: #ffffff;
     }
 </style>

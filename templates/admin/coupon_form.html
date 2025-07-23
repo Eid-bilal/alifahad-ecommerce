@@ -13,26 +13,31 @@
     <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
-            .error-message {
-                background-color: #f8d7da; /* Light red background */
-                color: #721c24;           /* Dark red text */
-                border: 1px solid #f5c6cb; /* Border with lighter red */
-                padding: 10px;            /* Spacing inside the box */
-                margin: 10px 0;           /* Spacing between messages */
-                border-radius: 5px;       /* Rounded corners */
-                font-size: 14px;          /* Text size */
-            }
+    .error-message {
+        background-color: #f8d7da; /* Light red background */
+        color: #721c24;           /* Dark red text */
+        border: 1px solid #f5c6cb; /* Border with lighter red */
+        padding: 10px;            /* Spacing inside the box */
+        margin: 10px 0;           /* Spacing between messages */
+        border-radius: 5px;       /* Rounded corners */
+        font-size: 14px;          /* Text size */
+        display: flex;            /* Flexbox for alignment */
+        align-items: center;      /* Center items vertically */
+    }
 
-            .success-message {
-                background-color: #d4edda; /* Light green background */
-                color: #155724;           /* Dark green text */
-                border: 1px solid #c3e6cb; /* Border with lighter green */
-                padding: 10px;            /* Spacing inside the box */
-                margin: 10px 0;           /* Spacing between messages */
-                border-radius: 5px;       /* Rounded corners */
-                font-size: 14px;          /* Text size */
-            }
-        </style>
+    .success-message {
+        background-color: #d4edda; /* Light green background */
+        color: #155724;           /* Dark green text */
+        border: 1px solid #c3e6cb; /* Border with lighter green */
+        padding: 10px;            /* Spacing inside the box */
+        margin: 10px 0;           /* Spacing between messages */
+        border-radius: 5px;       /* Rounded corners */
+        font-size: 14px;          /* Text size */
+        display: flex;            /* Flexbox for alignment */
+        align-items: center;      /* Center items vertically */
+    }
+</style>
+
   </head>
 
   <body>
@@ -189,31 +194,31 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script>
-      $(document).ready(function() {
-        $('.datepicker').datepicker({
-          format: 'yyyy-mm-dd',
-          autoclose: true,
-          todayHighlight: true
-        });
+  $(document).ready(function() {
+    // Existing code...
 
-        // Dynamically update the discount amount field based on the selected discount type
-        $('#discount_type').on('change', function() {
-          const discountType = $(this).val();
-          const discountField = $('#discount_amount');
-          const discountLabel = $('#discount_label');
+    // Confirmation dialog for delete action
+    $('.btn-danger').on('click', function(e) {
+      e.preventDefault(); // Prevent the default action
+      const deleteUrl = $(this).attr('href'); // Get the URL from the link
 
-          if (discountType === 'percentage') {
-            discountField.attr('step', '1'); // Percentage values should be whole numbers
-            discountField.attr('placeholder', 'Enter percentage (e.g., 10)');
-            discountLabel.text('Discount Amount (%)');
-          } else if (discountType === 'fixed') {
-            discountField.attr('step', '0.01'); // Fixed amount values can be decimal
-            discountField.attr('placeholder', 'Enter fixed amount (e.g., 10.00)');
-            discountLabel.text('Discount Amount (Fixed)');
-          }
-        });
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = deleteUrl; // Redirect to the delete URL
+        }
       });
-    </script>
+    });
+  });
+</script>
+
   </body>
 </html>
 

@@ -177,27 +177,25 @@ def add_variant(request, product_id):
     return redirect('edit_product', product_id=product.id)
 
 #============= update variant ====================================================================================================
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import VariantSize, Product, Variant
+
 def update_variant(request, variant_id):
     variant = get_object_or_404(Variant, id=variant_id)
     size_choices = get_size_choices(variant.product.category.category_name.lower())
     
     if request.method == "POST":
-        size = request.POST.get("size", "").strip()
-        price = float(request.POST.get("price", "").strip())
-        stock = int(request.POST.get("stock", "").strip())
+        size_name = request.POST.get("size", "").strip()
+        price = request.POST.get("price", "").strip()
+        stock = request.POST.get("stock", "").strip()
+        unit = request.POST.get("unit", "").strip()  # Assuming unit is passed in the form
 
-        if not size or not price or not stock:
+        # Validate inputs
+        if not size_name or not price or not stock or not unit:
             messages.error(request, "All fields are required.")
             return redirect('update_variant', variant_id=variant_id)
         
-        if price < 0:
-            messages.error(request, 'Price must be a positive indeger')
-            return redirect('update_variant', variant_id=variant_id)
-        
-        if stock < 0:
-            messages.error(request, 'Stock must be a positive indeger')
-            return redirect('update_variant', variant_id=variant_id)
-
         try:
             price = float(price)
             stock = int(stock)
@@ -205,14 +203,43 @@ def update_variant(request, variant_id):
             messages.error(request, "Price and stock must be valid numbers.")
             return redirect('update_variant', variant_id=variant_id)
 
-        variant.size = size
+        if price < 0:
+            messages.error(request, 'Price must be a positive number.')
+            return redirect('update_variant', variant_id=variant_id)
+        
+        if stock < 0:
+            messages.error(request, 'Stock must be a positive number.')
+            return redirect('update_variant', variant_id=variant_id)
+
+        # Validate unit
+        if unit not in dict(VariantSize.UNIT_CHOICES).keys():
+            messages.error(request, 'Invalid unit selected.')
+            return redirect('update_variant', variant_id=variant_id)
+
+        # Get or create VariantSize instance
+        try:
+            variant_size = VariantSize.objects.get(
+                size_name=size_name,
+                unit=unit,
+                category=variant.product.category
+            )
+        except VariantSize.DoesNotExist:
+            variant_size = VariantSize.objects.create(
+                size_name=size_name,
+                unit=unit,
+                category=variant.product.category
+            )
+
+        # Update variant
+        variant.size = variant_size  # Assign VariantSize instance
         variant.price = price
         variant.stock = stock
         variant.save()
         messages.success(request, "Variant updated successfully.")
-        return redirect('admin/variant_list', product_id=variant.product.id)
+        return redirect('admin/variant_list.html', product_id=variant.product.id)
 
     return render(request, 'admin/variant_update.html', {'variant': variant, 'size_choices': size_choices})
+
 
 #============ User side products ====================================================================================================
 
@@ -285,7 +312,11 @@ def user_products(request):
         'selected_sort': sort_by,
         'query': search_query,
     })
-
+def get_size_choices(category_name):
+    return {
+        'units': VariantSize.UNIT_CHOICES,
+        'sizes': VariantSize.objects.filter(category__category_name__iexact=category_name).values('size_name', 'unit')
+    }
 #============== Product details ======================================================================================================
 def product_details(request, product_id):
     product = get_object_or_404(Product, id=product_id, is_listed=True)
