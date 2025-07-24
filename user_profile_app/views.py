@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
@@ -23,7 +23,9 @@ def user_profile(request):
     storage = messages.get_messages(request)
     storage.used = True
     user_obj = request.user 
-
+    print(user_obj)
+    referral = get_object_or_404(Referral, user = user_obj)
+    
     # Get user addresses
     try:
         addresses = Address.objects.filter(user=user_obj, delete_address=False)
@@ -60,7 +62,10 @@ def user_profile(request):
         'wallet': {
             'balance': wallet_balance,
             'last_transaction': last_transaction
+        
         },
+        'referral': referral
+
     }
 
     return render(request, 'user/profile_user.html', context)

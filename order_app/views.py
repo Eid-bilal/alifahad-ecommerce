@@ -70,8 +70,6 @@ def checkout(request):
             try:
                 print("try block is working")
                 data = json.loads(request.body.decode("utf-8"))
-                print(f"body: {request.body}")
-                print(f"data:{data}")
                 address_id = data.get("address_id")
                 payment_method = data.get("payment_method")
                 wallet_amount = Decimal(data.get("wallet_amount", 0))
