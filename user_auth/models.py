@@ -24,7 +24,7 @@ class OTP(models.Model):
     otp = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(null=True)
-    updated_at = models.DateTimeField(null=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     # def is_valid(self):
     #     return self.created_at >= timezone.now() - timedelta(minutes=10)

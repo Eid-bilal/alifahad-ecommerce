@@ -287,64 +287,48 @@ def verify_otp(request, email):
     return render(request, 'user/verify_otp.html', {'email': email})
 
 #=================================================================================================================================
-from django.shortcuts import render, redirect
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import send_mail
-from .models import OTP
-from django.utils.crypto import get_random_string
-from datetime import timedelta
+import random
+import string
+from django.http import JsonResponse
 from django.utils import timezone
+from datetime import timedelta
+
+def generate_otp(length=6):
+    """Generate a random numeric OTP of specified length."""
+    digits = string.digits
+    return ''.join(random.choice(digits) for _ in range(length))
 
 def resend_otp(request, email):
     if request.method == 'POST':
+        print('hai')
         try:
-            # Check if OTP exists and handle cooldown
-            try:
-                otp_instance = OTP.objects.get(email=email)
+            otp_instance = OTP.objects.filter(email=email).first()
+            if otp_instance:
                 time_elapsed = timezone.now() - otp_instance.updated_at
-                
                 if time_elapsed < timedelta(seconds=30):
-                    seconds_remaining = 30 - time_elapsed.seconds
                     return JsonResponse({
                         'success': False,
-                        'message': f'Please wait {seconds_remaining} seconds before requesting a new OTP.'
+                        'message': f'Please wait {30 - time_elapsed.seconds}s before requesting a new OTP.'
                     })
-            except OTP.DoesNotExist:
-                pass
-
-            # Generate and save new OTP
+        
             otp = generate_otp()
             expires_at = timezone.now() + timedelta(minutes=5)
-            
+            print(otp)  # For debugging; remove in production
             OTP.objects.update_or_create(
                 email=email,
                 defaults={'otp': otp, 'expires_at': expires_at}
             )
 
-            # Send OTP
             if send_otp_email(email, otp):
-                return JsonResponse({
-                    'success': True,
-                    'message': 'New OTP sent successfully!'
-                })
+                return JsonResponse({'success': True, 'message': 'New OTP sent successfully!'})
             else:
-                return JsonResponse({
-                    'success': False,
-                    'message': 'Failed to send OTP. Please try again.'
-                })
+                return JsonResponse({'success': False, 'message': 'Failed to send OTP. Try again.'})                
 
         except Exception as e:
-            print(f"Error in resend_otp: {e}")
-            return JsonResponse({
-                'success': False,
-                'message': 'An error occurred. Please try again.'
-            })
+            print(e)  # For debugging; use proper logging in production
+            return JsonResponse({'success': False, 'message': 'An error occurred. Please try again.'})
 
-    return JsonResponse({
-        'success': False,
-        'message': 'Invalid request method.'
-    })
-
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
 #====================================================================================================================
 
@@ -499,16 +483,28 @@ def otp_verify(request):
         errors = {}
 
         if not session_otp or not otp_expiry:
-            errors['otp_error'] = 'OTP session has expired. Please request a new OTP.'
+            errors['otp'] = 'OTP session has expired. Please request a new OTP.'
         elif datetime.datetime.now().timestamp() > otp_expiry:
-            errors['otp_error'] = 'OTP has expired. Please request a new one.'
-        elif entered_otp != str(session_otp):  
-            errors['otp_error'] = 'Invalid OTP entered. Please try again.'
-        else:
-            return redirect('reset_new_password')
+            errors['otp'] = 'OTP has expired. Please request a new one.'
+        elif entered_otp != str(session_otp):
+            errors['otp'] = 'Invalid OTP entered. Please try again.'
+
         if errors:
             return JsonResponse({'status': 'error', 'errors': errors}, status=400)
         
+        # OTP is valid — clear session and respond with redirect target
+        try:
+            del request.session['otp']
+            del request.session['otp_expiry']
+        except KeyError:
+            pass
+
+        return JsonResponse({
+            'status': 'success',
+            'redirect_url': '/reset-password/'  # or use reverse('reset_new_password')
+        })
+
+    # If GET request, render the template
     return render(request, 'user/forgot/reset_otp.html')
 #----------------------------------------------------------------------------------------------------------------------------
 def reset_resend_otp(request):

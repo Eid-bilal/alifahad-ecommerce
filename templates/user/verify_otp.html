@@ -1,12 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OTP Verification</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css" integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
     <style>
         body {
             background-color: #ebecf0;
@@ -17,7 +16,6 @@
             font-size: 1.5rem;
             border: 1px solid #ccc;
             border-radius: 5px;
-            box-shadow: none;
             outline: none;
         }
         .otp-input:focus {
@@ -32,78 +30,92 @@
 <body>
     <div class="container p-5">
         <div class="row justify-content-center">
-            <div class="col-12 col-md-8 col-lg-5 mt-5">
+            <div class="col-md-8 col-lg-5">
                 <div class="bg-white p-5 rounded-3 shadow-sm border">
-                    <div>
-                        <p class="text-center text-success" style="font-size: 5.5rem;"><i class="fa-solid fa-envelope-circle-check"></i></p>
-                        <p class="text-center h5">Please check your email</p>
-                        <p class="text-muted text-center">We've sent a code to your email address</p>
+                    <p class="text-center text-success display-4"><i class="fa-solid fa-envelope-circle-check"></i></p>
+                    <p class="text-center h5">Please check your email</p>
+                    <p class="text-muted text-center">We've sent a code to your email address</p>
 
-                        <!-- Django Form Start -->
-                        <form method="POST">
-                            {% csrf_token %}
-                            <div class="pt-4 pb-2">
-                                <input class="otp-input text-center" type="text" name="otp" maxlength="6" placeholder="Enter 6-digit code">
-                            </div>
-                            {% if error %}
-                            <div class="alert alert-danger text-center">
-                                {{ error }}
-                            </div>
-                            {% endif %}
-                            <p class="text-muted text-center">Didn't get the code? <a id="resend-link" href="#" class="text-success disabled">Resend in <span id="timer">30</span> seconds</a></p>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary w-100 mt-3">Verify</button>
-                            </div>
-                        </form>
-                    </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input class="otp-input text-center" type="text" name="otp" maxlength="6" placeholder="Enter 6-digit code">
+                        {% if error %}
+                            <div class="alert alert-danger text-center mt-3">{{ error }}</div>
+                        {% endif %}
+                        <p class="text-muted text-center mt-3">
+                            Didn't get the code? 
+                            <a id="resend-link" class="text-success disabled">Resend in <span id="timer">30</span> seconds</a>
+                        </p>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary w-100 mt-3">Verify</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Define required JS variables from Django -->
+    <script>
+        const RESEND_URL = "{% url 'resend_otp' email=email %}";
+        const CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
+
     <script>
         let timerElement = document.getElementById('timer');
         let resendLink = document.getElementById('resend-link');
         let timeLeft = 30;
-        let userId = '{{ user_id }}'; // Add the user ID to your template context
+        let timer;
 
         function countdown() {
             if (timeLeft <= 0) {
                 clearInterval(timer);
                 resendLink.classList.remove('disabled');
-                resendLink.innerHTML = 'Click to resend.';
-                resendLink.href = "#";
-                resendLink.addEventListener('click', function(event) {
-                    event.preventDefault();
+                resendLink.textContent = 'Click to resend.';
+                resendLink.style.cursor = 'pointer';
+
+                resendLink.addEventListener('click', function handleResend(e) {
+                    e.preventDefault();
+                    resendLink.removeEventListener('click', handleResend); // prevent multiple clicks
                     resendOtp();
                 });
             } else {
-                timerElement.innerHTML = timeLeft;
+                timerElement.textContent = timeLeft;
                 timeLeft--;
             }
         }
 
-        let timer = setInterval(countdown, 1000);
+        timer = setInterval(countdown, 1000);
 
         function resendOtp() {
-            fetch('{% url "resend_otp" email=email %}', {
+            resendLink.textContent = 'Sending...';
+            resendLink.classList.add('disabled');
+
+            fetch(RESEND_URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ user_id: userId })
+                    'X-CSRFToken': CSRF_TOKEN,
+                    'Content-Type': 'application/json'
+                }
             })
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
                 if (data.success) {
                     alert(data.message);
-                    timeLeft = 30; // Reset the timer
+                    timeLeft = 30;
+                    timerElement.textContent = timeLeft;
                     clearInterval(timer);
                     timer = setInterval(countdown, 1000);
                 } else {
                     alert(data.message);
+                    resendLink.textContent = 'Click to resend.';
+                    resendLink.classList.remove('disabled');
                 }
+            })
+            .catch(() => {
+                alert('Something went wrong. Please try again.');
+                resendLink.classList.remove('disabled');
+                resendLink.textContent = 'Click to resend.';
             });
         }
     </script>
