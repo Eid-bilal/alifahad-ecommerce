@@ -60,7 +60,7 @@
     .section__heading {
         font-size: 24px;
         font-weight: bold;
-        color: #どうぞ333;
+        color: #333;
     }
 
     /* Form Styles */
@@ -143,10 +143,18 @@
         text-decoration: underline;
     }
 
+    .resend-otp-link.disabled {
+        color: #ccc;
+        cursor: not-allowed;
+        text-decoration: none;
+    }
+
     /* Timer Styles */
     #timer {
         font-weight: bold;
         color: #d9534f;
+        display: inline-block;
+        min-width: 80px; /* Ensure visibility */
     }
 
     /* Back to Login Link */
@@ -246,19 +254,19 @@
                             <div class="l-f-o__pad-box">
                                 <h1 class="gl-h1">OTP VERIFICATION</h1>
                                 <span class="gl-text u-s-m-b-30">Enter OTP sent to email</span>
-                                <form class="l-f-o__form" method="post" id="otp-form">
+                                <form class="l-f-o__form" method="post" id="otp-form" action="{% url 'otp_verify' %}">
                                     {% csrf_token %}
                                     <div class="u-s-m-b-30">
                                         <label class="gl-label" for="reset-email">OTP *</label>
-                                        <input class="input-text input-text--primary-style" name="otp" type="text" placeholder="Enter OTP" maxlength="6" pattern="\d*" inputmode="numeric">
+                                        <input class="input-text input-text--primary-style" name="otp" type="text" placeholder="Enter OTP" maxlength="6" pattern="\d*" inputmode="numeric" required>
                                     </div>
                                     <div class="gl-inline">
                                         <div class="u-s-m-b-30">
                                             <button class="btn btn--e-transparent-brand-b-2" type="submit">VERIFY</button>
                                         </div>
                                         <div class="u-s-m-b-30">
-                                            <p>OTP will expire in: <span id="timer"></span></p>
-                                            <a class="gl-link resend-otp-link" href="#" data-url="{% url 'reset_resend_otp' %}">Resend OTP</a>
+                                            <p>OTP will expire in: <span id="timer">1m 00s</span></p>
+                                            <a class="gl-link resend-otp-link disabled" href="#" data-url="{% url 'reset_resend_otp' %}">Resend OTP</a>
                                         </div>
                                     </div>
                                     <div class="u-s-m-b-30">
@@ -316,7 +324,7 @@ $(document).ready(function() {
         $('.preloader').addClass('is-active');
         $.ajax({
             type: 'POST',
-            url: '{% url "otp_verify" %}',
+            url: $(this).attr('action'),
             data: $(this).serialize(),
             dataType: 'json',
             success: function(response) {
@@ -329,26 +337,33 @@ $(document).ready(function() {
                         confirmButtonColor: '#000',
                         customClass: { icon: 'black-icon' }
                     }).then(() => {
-                        window.location.href = response.redirect_url;
+                        window.location.href = response.redirect_url || '{% url "reset_resend_otp" %}';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Verification Failed',
+                        text: response.message || 'Invalid OTP. Please try again.',
+                        confirmButtonColor: '#000',
+                        customClass: { icon: 'black-icon' }
                     });
                 }
             },
             error: function(xhr) {
                 $('.preloader').removeClass('is-active');
-                if (xhr.status === 400) {
-                    const errors = xhr.responseJSON.errors;
-                    let errorMessages = '';
-                    for (let key in errors) {
-                        errorMessages += errors[key] + '<br>';
-                    }
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        html: errorMessages,
-                        confirmButtonColor: '#000',
-                        customClass: { icon: 'black-icon' }
-                    });
+                let errorMessage = 'An unexpected error occurred.';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
                 }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    html: errorMessage,
+                    confirmButtonColor: '#000',
+                    customClass: { icon: 'black-icon' }
+                });
             }
         });
     });
@@ -356,31 +371,39 @@ $(document).ready(function() {
     // OTP timer
     let otpExpiryTime = 60;
     const timerElement = $('#timer');
-    let countdownTimer = setInterval(() => {
-        if (otpExpiryTime <= 0) {
-            clearInterval(countdownTimer);
-            timerElement.text('OTP has expired.');
-            $('a.resend-otp-link').addClass('disabled').text('Resend OTP disabled');
-            Swal.fire({
-                icon: 'warning',
-                title: 'Time Expired',
-                text: 'Signup Again!',
-                confirmButtonColor: '#000',
-                customClass: { icon: 'black-icon' },
-                timer: 3000,
-                willClose: () => { window.location.href = '{% url "login" %}'; }
-            });
-        } else {
-            let minutes = Math.floor(otpExpiryTime / 60);
-            let seconds = otpExpiryTime % 60;
-            timerElement.text(`${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`);
-            otpExpiryTime--;
-        }
-    }, 1000);
+    const resendLink = $('.resend-otp-link');
+    function startTimer() {
+        timerElement.text('1m 00s'); // Initialize timer display
+        resendLink.addClass('disabled').text('Resend OTP (wait)'); // Disable link initially
+        let countdownTimer = setInterval(() => {
+            if (otpExpiryTime <= 0) {
+                clearInterval(countdownTimer);
+                timerElement.text('OTP has expired.');
+                resendLink.removeClass('disabled').text('Resend OTP'); // Enable link when timer expires
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Time Expired',
+                    text: 'Please request a new OTP or sign up again!',
+                    confirmButtonColor: '#000',
+                    customClass: { icon: 'black-icon' },
+                    timer: 3000,
+                    willClose: () => { window.location.href = '{% url "login" %}'; }
+                });
+            } else {
+                let minutes = Math.floor(otpExpiryTime / 60);
+                let seconds = otpExpiryTime % 60;
+                timerElement.text(`${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`);
+                otpExpiryTime--;
+            }
+        }, 1000);
+        return countdownTimer;
+    }
+    let countdownTimer = startTimer();
 
     // Resend OTP
-    $('.resend-otp-link').on('click', function(event) {
+    resendLink.on('click', function(event) {
         event.preventDefault();
+        if ($(this).hasClass('disabled')) return; // Prevent clicks while disabled
         const $link = $(this);
         $link.prop('disabled', true).text('Sending...');
         $.ajax({
@@ -391,45 +414,23 @@ $(document).ready(function() {
                     Swal.fire({
                         icon: 'success',
                         title: 'OTP Resent',
-                        text: response.message,
+                        text: response.message || 'A new OTP has been sent to your email.',
                         confirmButtonColor: '#000',
                         customClass: { icon: 'black-icon' }
                     });
-                    // Reset timer
+                    // Reset timer and disable link
                     otpExpiryTime = 60;
-                    timerElement.text('');
                     clearInterval(countdownTimer);
-                    countdownTimer = setInterval(() => {
-                        if (otpExpiryTime <= 0) {
-                            clearInterval(countdownTimer);
-                            timerElement.text('OTP has expired.');
-                            $('a.resend-otp-link').addClass('disabled').text('Resend OTP disabled');
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Time Expired',
-                                text: 'Signup
-
- Again!',
-                                confirmButtonColor: '#000',
-                                customClass: { icon: 'black-icon' },
-                                timer: 3000,
-                                willClose: () => { window.location.href = '{% url "login" %}'; }
-                            });
-                        } else {
-                            let minutes = Math.floor(otpExpiryTime_dropdown/ 60);
-                            let seconds = otpExpiryTime % 60;
-                            timerElement.text(`${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`);
-                            otpExpiryTime--;
-                        }
-                    }, 1000);
+                    countdownTimer = startTimer();
                 } else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Something went wrong. Please try again.',
+                        text: response.message || 'Something went wrong. Please try again.',
                         confirmButtonColor: '#000',
                         customClass: { icon: 'black-icon' }
                     });
+                    $link.removeClass('disabled').text('Resend OTP'); // Re-enable link on error
                 }
             },
             error: function(xhr) {
@@ -444,9 +445,10 @@ $(document).ready(function() {
                     confirmButtonColor: '#000',
                     customClass: { icon: 'black-icon' }
                 });
+                $link.removeClass('disabled').text('Resend OTP'); // Re-enable link on error
             },
             complete: function() {
-                $link.prop('disabled', false).text('Resend OTP');
+                $link.prop('disabled', false);
             }
         });
     });
