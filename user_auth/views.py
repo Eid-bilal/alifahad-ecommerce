@@ -470,14 +470,19 @@ def forgot_password(request):
     # Render forgot password template for GET requests
     return render(request, 'user/forgot/forgot_password.html')
 #------------------------------------------------------------------------------------------------------------------------
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.views.decorators.cache import never_cache
+import datetime
+
 @never_cache
 def otp_verify(request):
     if request.user.is_authenticated:
-        return redirect('home')
+        return JsonResponse({'status': 'error', 'message': 'User already authenticated'}, status=403)
 
     if request.method == 'POST':
         entered_otp = request.POST.get('otp')
-        session_otp = request.session.get('otp')  
+        session_otp = request.session.get('otp')
         otp_expiry = request.session.get('otp_expiry')
 
         errors = {}
@@ -490,19 +495,24 @@ def otp_verify(request):
             errors['otp'] = 'Invalid OTP entered. Please try again.'
 
         if errors:
-            return JsonResponse({'status': 'error', 'errors': errors}, status=400)
-        
-        # OTP is valid — clear session and respond with redirect target
+            if request.is_ajax():
+                return JsonResponse({'status': 'error', 'message': errors['otp']}, status=400)
+            return render(request, 'user/forgot/reset_otp.html', {'error': errors['otp']})
+
+        # OTP is valid — clear session and proceed
         try:
             del request.session['otp']
             del request.session['otp_expiry']
         except KeyError:
             pass
 
-        return JsonResponse({
-            'status': 'success',
-            'redirect_url': '/reset-password/'  # or use reverse('reset_new_password')
-        })
+        if request.is_ajax():
+            return JsonResponse({
+                'status': 'success',
+                'message': 'OTP verified successfully.',
+                'redirect_url': '/reset-password/'  # or reverse('reset_new_password')
+            })
+        return redirect('/reset-password/')
 
     # If GET request, render the template
     return render(request, 'user/forgot/reset_otp.html')
