@@ -501,8 +501,9 @@ document.getElementById("couponForm").addEventListener("submit", function(event)
                 showConfirmButton: false,
             });
 
-            let total = parseFloat(totalElement.textContent.replace('₹', ''));
+            let total = parseFloat(totalElement.textContent.replace('₹', '')); //i made xhanges here let to 
             const discount = data.discount;
+            console.log("discount type is :",data)
             if (data.discount_type === 'percentage') {
                 appliedCouponDiscount = total * (discount / 100); // Store the discount
                 total -= appliedCouponDiscount;

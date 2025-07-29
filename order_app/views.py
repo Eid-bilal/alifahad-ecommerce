@@ -88,6 +88,7 @@ def checkout(request):
                             if total >= coupon.min_purchase_amount:
                                 if coupon.discount_type == 'percentage':
                                     discount = total * (coupon.discount_amount / Decimal('100'))
+                                    print("hai ",discount)
                                 elif coupon.discount_type == 'fixed':
                                     discount = coupon.discount_amount
                                 else:
@@ -275,6 +276,7 @@ def apply_coupon(request):
 
         try:
             coupon = Coupon.objects.get(code=coupon_code)
+           
             
             if not total_amount_excluding_shipping:
                 return JsonResponse({'valid': False, 'error': 'Total amount excluding shipping not provided'})
@@ -284,7 +286,7 @@ def apply_coupon(request):
                 return JsonResponse({'valid': False, 'error': f'Minimum purchase amount not met. Minimum required is ₹{coupon.min_purchase_amount}.'})
             
             if coupon.active and (not coupon.valid_until or coupon.valid_until >= timezone.now()):
-                return JsonResponse({'valid': True, 'discount': coupon.discount_amount, 'message': 'Coupon applied successfully'})
+                return JsonResponse({'valid': True, 'discount': coupon.discount_amount,"discount_type":coupon.discount_type, 'message': 'Coupon applied successfully'})
             else:
                 return JsonResponse({'valid': False, 'error': 'Coupon is not active or has expired'})
         except Coupon.DoesNotExist:
@@ -1222,10 +1224,28 @@ def generate_excel_report(request):
     return response
 
 #----------------------------- add address in checkout ------------------------------------------------------------------------
+from django.core.exceptions import ValidationError
+from validator_app import views
+from django.shortcuts import render, redirect,get_object_or_404
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+import re
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth import authenticate, login
+from django.core.exceptions import ValidationError
+from validator_app import views
+
+from wallet_app.models import Wallet, WalletTransactions
+from order_app.models import Order
+from django.contrib.auth import authenticate, login
 @login_required(login_url='login')
 def add_checkout_address(request):
     storage = messages.get_messages(request)
     storage.used = True
+    user = request.user
 
     if request.method == "POST":
         username = request.user.username
@@ -1243,76 +1263,184 @@ def add_checkout_address(request):
         state = request.POST.get("state")
         city = request.POST.get("city")
 
-        check_full_name = views.name_validator(full_name)
-        check_post_office = views.validate_post_office_name(post_office)
-        check_pin = views.validate_pin_code(pincode)
-        check_landmark = views.validate_landmark(landmark)
-        check_accessible = views.validate_area(accessible)
-        check_area = views.validate_area(area)
-        check_city = views.validate_city(city)
-        check_state = views.validate_state(state)
-        check_phone = views.validate_phone(phone)
-        check_alt_phone = views.validate_phone(alt_phone)
+        # Validate fields
+        check_full_name = name_validator(full_name)
+        check_post_office = validate_post_office_name(post_office)
+        check_pin = validate_pin_code(pincode)
+        check_landmark = validate_landmark(landmark)
+        check_accessible = validate_area(accessible)
+        check_area = validate_area(area)
+        check_city = validate_city(city)
+        check_state = validate_state(state)
+        check_phone = validate_phone(phone)
+        check_alt_phone = validate_phone(alt_phone)
 
-        if check_full_name[0] is True:
+        # Handle validation errors
+        if check_full_name[0]:
             messages.error(request, check_full_name[1])
-            return redirect("order:checkout")
-        if check_post_office[0] is True:
+            return redirect("add_address")
+        if check_post_office[0]:
             messages.error(request, check_post_office[1])
-            return redirect("order:checkout")
-        if check_pin[0] is True:
+            return redirect("add_address")
+        if check_pin[0]:
             messages.error(request, check_pin[1])
-            return redirect("order:checkout")
-        if check_landmark[0] is True:
+            return redirect("add_address")
+        if check_landmark[0]:
             messages.error(request, check_landmark[1])
-            return redirect("order:checkout")
-        if check_accessible[0] is True:
+            return redirect("add_address")
+        if check_accessible[0]:
             messages.error(request, check_accessible[1])
-            return redirect("order:checkout")
-        if check_area[0] is True:
+            return redirect("add_address")
+        if check_area[0]:
             messages.error(request, check_area[1])
-            return redirect("order:checkout")
-        if check_city[0] is True:
+            return redirect("add_address")
+        if check_city[0]:
             messages.error(request, check_city[1])
-            return redirect("order:checkout")
-        if check_state[0] is True:
+            return redirect("add_address")
+        if check_state[0]:
             messages.error(request, check_state[1])
-            return redirect("order:checkout")
-        if check_phone[0] is True:
+            return redirect("add_address")
+        if check_phone[0]:
             messages.error(request, check_phone[1])
-            return redirect("order:checkout")
-        if check_city[0] is True:
-            messages.error(request, check_city[1])
-            return redirect("order:checkout")
-        if check_city[0] is True:
-            messages.error(request, check_city[1])
-            return redirect("order:checkout")
-        if check_alt_phone[0] is True:
+            return redirect("add_address")
+        if check_alt_phone[0]:
             messages.error(request, check_alt_phone[1])
-            return redirect("order:checkout")
+            return redirect("add_address")
 
         data = Address(
             user=user_data,
             pincode=pincode,
             post_office=post_office,
-            landmark=landmark,
+            landmark=landmark or None,
             accessible=accessible,
             address_type=address_type,
             area=area,
             state=state,
             city=city,
-            alternative_phone=alt_phone,
+            alternative_phone=alt_phone or '',
             phone_no=phone,
             full_name=full_name,
+            delete_address=False
         )
         try:
             data.full_clean()
             data.save()
             messages.success(request, "Address added")
-            return redirect("order:checkout")
+            return redirect("checkout")
         except Exception as e:
             messages.error(request, f"Error! {e}")
+
+
     return render(request, "user/checkout_address_add.html")
+def username_test(username):
+    """
+    Validate username: must be 3-30 characters, alphanumeric with underscores/hyphens.
+    Returns (is_invalid, error_message).
+    """
+    if not username:
+        return (True, "Username is required.")
+    if not re.match(r'^[a-zA-Z0-9_-]{3,30}$', username):
+        return (True, "Username must be 3-30 characters and contain only letters, numbers, underscores, or hyphens.")
+    return (False, "")
+
+def email_test(email):
+    """
+    Validate email format.
+    Returns (is_invalid, error_message).
+    """
+    if not email:
+        return (True, "Email is required.")
+    if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+        return (True, "Invalid email format.")
+    return (False, "")
+
+def name_validator(name):
+    """
+    Validate name: must be 1-50 characters, letters, spaces, or hyphens.
+    Returns (is_invalid, error_message).
+    """
+    if not name:
+        return (True, "Full name is required.")  # Modified for add_address
+    if not re.match(r'^[a-zA-Z\s-]{1,50}$', name):
+        return (True, "Name must be 1-50 characters and contain only letters, spaces, or hyphens.")
+    return (False, "")
+
+def validate_post_office_name(post_office):
+    """
+    Validate post office name: must be 1-40 characters, letters, numbers, spaces, or hyphens.
+    Returns (is_invalid, error_message).
+    """
+    if not post_office:
+        return (True, "Post office name is required.")
+    if not re.match(r'^[a-zA-Z0-9\s-]{1,40}$', post_office):
+        return (True, "Post office name must be 1-40 characters and contain only letters, numbers, spaces, or hyphens.")
+    return (False, "")
+
+def validate_pin_code(pincode):
+    """
+    Validate pincode: must be exactly 6 digits.
+    Returns (is_invalid, error_message).
+    """
+    if not pincode:
+        return (True, "Pincode is required.")
+    if not re.match(r'^\d{6}$', pincode):
+        return (True, "Pincode must be exactly 6 digits.")
+    return (False, "")
+
+def validate_landmark(landmark):
+    """
+    Validate landmark: optional, max 30 characters, letters, numbers, spaces, or hyphens.
+    Returns (is_invalid, error_message).
+    """
+    if not landmark:
+        return (False, "")  # Landmark is optional
+    if not re.match(r'^[a-zA-Z0-9\s-]{0,30}$', landmark):
+        return (True, "Landmark must be up to 30 characters and contain only letters, numbers, spaces, or hyphens.")
+    return (False, "")
+
+def validate_area(area):
+    """
+    Validate area/accessible: must be 1-50 characters, letters, numbers, spaces, or hyphens.
+    Returns (is_invalid, error_message).
+    """
+    if not area:
+        return (True, "Area/Accessible is required.")
+    if not re.match(r'^[a-zA-Z0-9\s-]{1,50}$', area):
+        return (True, "Area/Accessible must be 1-50 characters and contain only letters, numbers, spaces, or hyphens.")
+    return (False, "")
+
+def validate_city(city):
+    """
+    Validate city: must be 1-50 characters, letters, spaces, or hyphens.
+    Returns (is_invalid, error_message).
+    """
+    if not city:
+        return (True, "City is required.")
+    if not re.match(r'^[a-zA-Z\s-]{1,50}$', city):
+        return (True, "City must be 1-50 characters and contain only letters, spaces, or hyphens.")
+    return (False, "")
+
+def validate_state(state):
+    """
+    Validate state: must be 1-40 characters, letters, spaces, or hyphens.
+    Returns (is_invalid, error_message).
+    """
+    if not state:
+        return (True, "State is required.")
+    if not re.match(r'^[a-zA-Z\s-]{1,40}$', state):
+        return (True, "State must be 1-40 characters and contain only letters, spaces, or hyphens.")
+    return (False, "")
+
+def validate_phone(phone):
+    """
+    Validate phone: must be exactly 10 digits, optional for alt_phone.
+    Returns (is_invalid, error_message).
+    """
+    if not phone:
+        return (True, "Phone number is required.")  # Modified for main phone
+    if not re.match(r'^\d{10}$', phone):
+        return (True, "Phone number must be exactly 10 digits.")
+    return (False, "")
 
 #-------------------------------------------- edit address in checkou -------------------------------------------------------#
 

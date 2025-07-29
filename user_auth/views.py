@@ -82,6 +82,9 @@ def category_products(request, category_id):
     return render(request, 'user/category_products.html', {'category': category, 'products': products})
 
 #=========================================================================================================================#
+from django.db.models import Case, When, BooleanField, Q
+from django.shortcuts import render
+from product_app . models import Product
 
 def shop(request):
     products = Product.objects.all()
@@ -89,6 +92,15 @@ def shop(request):
     query = request.GET.get('q', '').strip()
     if query:
         products = products.filter(product_name__icontains=query)
+
+    # Annotate products with a flag indicating if they or their category have an offer
+    products = products.annotate(
+        has_offer=Case(
+            When(Q(offer_percentage__gt=0) | Q(category__category_offer__gt=0), then=True),
+            default=False,
+            output_field=BooleanField()
+        )
+    )
 
     return render(request, 'user/shop.html', {
         'products': products,
@@ -439,12 +451,13 @@ def forgot_password(request):
 
         # Generate OTP
         otp = generate_otp()
+        print(otp)
 
         # Set OTP expiry (5 minutes from now)
         otp_expiry = datetime.datetime.now() + datetime.timedelta(minutes=5)
         
         # Store OTP details in session
-        request.session['otp'] = otp
+        request.session['session_otp'] = str(otp)
         request.session['otp_expiry'] = otp_expiry.timestamp()
         request.session['email'] = email
 
@@ -472,19 +485,20 @@ def forgot_password(request):
 #------------------------------------------------------------------------------------------------------------------------
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from django.views.decorators.cache import never_cache
 import datetime
 
 @never_cache
 def otp_verify(request):
     if request.user.is_authenticated:
-        return JsonResponse({'status': 'error', 'message': 'User already authenticated'}, status=403)
+        return redirect('home')
+    
 
     if request.method == 'POST':
         entered_otp = request.POST.get('otp')
-        session_otp = request.session.get('otp')
+        session_otp = request.session.get('session_otp')  
         otp_expiry = request.session.get('otp_expiry')
-
+        print(entered_otp,session_otp)
+        
         errors = {}
 
         if not session_otp or not otp_expiry:
@@ -495,24 +509,17 @@ def otp_verify(request):
             errors['otp'] = 'Invalid OTP entered. Please try again.'
 
         if errors:
-            if request.is_ajax():
-                return JsonResponse({'status': 'error', 'message': errors['otp']}, status=400)
+            # Re-render the template with the error message
             return render(request, 'user/forgot/reset_otp.html', {'error': errors['otp']})
 
-        # OTP is valid — clear session and proceed
+        # OTP is valid — clear session and redirect
         try:
             del request.session['otp']
             del request.session['otp_expiry']
         except KeyError:
             pass
-
-        if request.is_ajax():
-            return JsonResponse({
-                'status': 'success',
-                'message': 'OTP verified successfully.',
-                'redirect_url': '/reset-password/'  # or reverse('reset_new_password')
-            })
-        return redirect('/reset-password/')
+        print("hdsafjksdafjads;")
+        return redirect('reset_new_password')  # or reverse('reset_new_password')
 
     # If GET request, render the template
     return render(request, 'user/forgot/reset_otp.html')
