@@ -1,229 +1,555 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Coupon Management</title>
-    <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
-    <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
-    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
-    <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'img/apple-icon.png' %}" />
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}" />
+    <title>Coupon Management - Argon Dashboard</title>
+    <!-- Fonts and icons -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Nucleo Icons -->
+    <link href="{% static 'admin/assets/css/nucleo-icons.css' %}" rel="stylesheet" />
+    <link href="{% static 'admin/assets/css/nucleo-svg.css' %}" rel="stylesheet" />
+    <!-- Popper -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <!-- Main Styling -->
+    <link href="{% static 'admin/assets/css/argon-dashboard-tailwind.css' %}" rel="stylesheet" />
+    <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Bootstrap Datepicker CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
     <style>
+        /* Button styling */
+        .create-btn {
+            background: linear-gradient(to top left, #10b981, #34d399);
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 0.5rem;
+            transition: all 0.15s ease-in;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .create-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .edit-btn {
+            background: linear-gradient(to top left, #10b981, #34d399);
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 0.5rem;
+            transition: all 0.15s ease-in;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        .edit-btn:hover {
+            background: linear-gradient(to top left, #059669, #22c55e);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .delete-btn {
+            background: linear-gradient(to top left, #ef4444, #f87171);
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 0.5rem;
+            transition: all 0.15s ease-in;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        .delete-btn:hover {
+            background: linear-gradient(to top left, #dc2626, #ef4444);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        /* Enhanced table styling */
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+        }
+        .table th {
+            padding: 1.25rem;
+            background: linear-gradient(to top left, #1e293b, #475569);
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .table td {
+            padding: 1.25rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .table tr:hover {
+            background-color: #e5e7eb;
+            transition: background-color 0.2s ease-in;
+        }
+        .pagination .page-link {
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            background-color: transparent;
+        }
+        .pagination .page-link:hover {
+            background-color: #ffffff;
+            color: #333333;
+            border-color: #ffffff;
+        }
+        .pagination .active .page-link {
+            background-color: #ffffff;
+            color: #333333;
+            border-color: #ffffff;
+        }
+        /* Datepicker styling */
+        .datepicker {
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+        }
+        .datepicker-days .table-condensed {
+            background: #fff;
+            border-radius: 0.5rem;
+        }
+        .datepicker-days .table-condensed thead {
+            background: linear-gradient(to top left, #10b981, #34d399);
+            color: #fff;
+        }
+        .datepicker-days .table-condensed th {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .datepicker-days .table-condensed td.active {
+            background: #10b981 !important;
+            color: #fff;
+        }
+        .datepicker-days .table-condensed td:hover {
+            background: #e5e7eb;
+            cursor: pointer;
+        }
+        .datepicker-days .table-condensed td.disabled {
+            color: #d1d5db;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
 
-    .error-message {
-        background-color: #f8d7da; /* Light red background */
-        color: #721c24;           /* Dark red text */
-        border: 1px solid #f5c6cb; /* Border with lighter red */
-        padding: 10px;            /* Spacing inside the box */
-        margin: 10px 0;           /* Spacing between messages */
-        border-radius: 5px;       /* Rounded corners */
-        font-size: 14px;          /* Text size */
-        display: flex;            /* Flexbox for alignment */
-        align-items: center;      /* Center items vertically */
-    }
+<body class="m-0 font-sans text-base antialiased font-normal dark:bg-slate-900 leading-default bg-gray-50 text-slate-500">
+    <div class="absolute w-full bg-blue-500 dark:hidden min-h-75"></div>
+    <!-- Sidenav -->
+    <aside class="fixed inset-y-0 flex-wrap items-center justify-between block w-full p-0 my-4 overflow-y-auto antialiased transition-transform duration-200 -translate-x-full bg-white border-0 shadow-xl dark:shadow-none dark:bg-slate-850 max-w-64 ease-nav-brand z-990 xl:ml-6 rounded-2xl xl:left-0 xl:translate-x-0" aria-expanded="false">
+        <div class="h-19">
+            <i class="absolute top-0 right-0 p-4 opacity-50 cursor-pointer fas fa-times dark:text-white text-slate-400 xl:hidden" sidenav-close></i>
+            <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap dark:text-white text-slate-700" href="https://demos.creative-tim.com/argon-dashboard-tailwind/pages/dashboard.html" target="_blank">
+                <img src="{% static 'admin/assets/img/logo-ct-dark.png' %}" class="inline h-full max-w-full transition-all duration-200 dark:hidden ease-nav-brand max-h-8" alt="main_logo" />
+                <img src="{% static 'admin/assets/img/logo-ct.png' %}" class="hidden h-full max-w-full transition-all duration-200 dark:inline ease-nav-brand max-h-8" alt="main_logo" />
+                <span class="ml-1 font-semibold transition-all duration-200 ease-nav-brand">Abn perumes</span>
+            </a>
+        </div>
+        <hr class="h-px mt-0 bg-transparent bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent" />
+        <div class="items-center block w-auto max-h-screen overflow-auto h-sidenav grow basis-full">
+            <ul class="flex flex-col pl-0 mb-0">
+                <li class="mt-0.5 w-full">
+                    <a class="py-2.7 dark:text-white dark:opacity-80 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'panel' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-blue-500 ni ni-tv-2"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Dashboard</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'user_management' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-orange-500 ni ni-calendar-grid-58"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Users</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'product_management' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center fill-current stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-emerald-500 ni ni-credit-card"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Product</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'category_management' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-cyan-500 ni ni-app"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Category</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'order:order_management' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-red-600 ni ni-world-2"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Order</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="py-2.7 bg-blue-500/13 dark:text-white dark:opacity-80 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'coupon_list' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-red-600 ni ni-world-2"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Coupon</span>
+                    </a>
+                </li>
+                <li class="w-full mt-4">
+                    <h6 class="pl-6 ml-2 text-xs font-bold leading-tight uppercase dark:text-white opacity-60">Account pages</h6>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="../pages/profile.html">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-slate-700 ni ni-single-02"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Profile</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'admin_logout' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-orange-500 ni ni-single-copy-04"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Sign Out</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="mx-4">
+            <div class="relative flex flex-col min-w-0 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border" sidenav-card>
+                <img class="w-1/2 mx-auto" src="{% static 'admin/assets/img/illustrations/icon-documentation.svg' %}" alt="sidebar illustrations" />
+                <div class="flex-auto w-full p-4 pt-0 text-center">
+                    <div class="transition-all duration-200 ease-in">
+                        <h6 class="mb-0 dark:text-white text-slate-700">Need help?</h6>
+                        <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">Please check our docs</p>
+                    </div>
+                </div>
+            </div>
+            <a href="https://www.creative-tim.com/learning-lab/tailwind/html/quick-start/argon-dashboard/" target="_blank" class="inline-block w-full px-8 py-2 mb-4 text-xs font-bold leading-normal text-center text-white capitalize transition-all ease-in rounded-lg shadow-md bg-slate-700 bg-0.15 hover:shadow-lg hover:-translate-y-px">Documentation</a>
+        </div>
+    </aside>
+    <!-- End Sidenav -->
 
-    .success-message {
-        background-color: #d4edda; /* Light green background */
-        color: #155724;           /* Dark green text */
-        border: 1px solid #c3e6cb; /* Border with lighter green */
-        padding: 10px;            /* Spacing inside the box */
-        margin: 10px 0;           /* Spacing between messages */
-        border-radius: 5px;       /* Rounded corners */
-        font-size: 14px;          /* Text size */
-        display: flex;            /* Flexbox for alignment */
-        align-items: center;      /* Center items vertically */
-    }
-</style>
+    <main class="relative h-full max-h-screen transition-all duration-200 ease-in-out xl:ml-68 rounded-xl">
+        <!-- Navbar -->
+        <nav class="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all ease-in shadow-none duration-250 rounded-2xl lg:flex-nowrap lg:justify-start" navbar-main navbar-scroll="false">
+            <div class="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
+                <nav>
+                    <ol class="flex flex-wrap pt-1 mr-12 bg-transparent rounded-lg sm:mr-16">
+                        <li class="text-sm leading-normal">
+                            <a class="text-white opacity-50" href="javascript:;">Pages</a>
+                        </li>
+                        <li class="text-sm pl-2 capitalize leading-normal text-white before:float-left before:pr-2 before:text-white before:content-['/']" aria-current="page">Coupon Management</li>
+                    </ol>
+                    <h6 class="mb-0 font-bold text-white capitalize">Coupon Management</h6>
+                </nav>
+                <div class="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
+                    <div class="flex items-center md:ml-auto md:pr-4">
+                        <form class="relative flex flex-wrap items-stretch w-full transition-all rounded-lg ease-in" method="GET" action="{% url 'coupon_list' %}">
+                            <span class="text-sm ease-in leading-5.6 absolute z-50 -ml-px flex h-full items-center whitespace-nowrap rounded-lg rounded-tr-none rounded-br-none border border-r-0 border-transparent bg-transparent py-2 px-2.5 text-center font-normal text-slate-500 transition-all">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" name="q" value="{{ query|default:'' }}" class="pl-9 text-sm focus:shadow-primary-outline ease-in w-1/100 leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-lg border border-solid border-gray-300 dark:bg-slate-850 dark:text-white bg-white bg-clip-padding py-2 pr-3 text-gray-700 transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:transition-shadow" placeholder="Search coupons..." />
+                            <button type="submit" class="create-btn ml-2">Search</button>
+                        </form>
+                    </div>
+                    <ul class="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
+                        <li class="flex items-center">
+                            <a href="{% url 'admin_logout' %}" class="block px-0 py-2 text-sm font-semibold text-white transition-all ease-in">
+                                <i class="fa fa-user sm:mr-1"></i>
+                                <span class="hidden sm:inline">Sign Out</span>
+                            </a>
+                        </li>
+                        <li class="flex items-center pl-4 xl:hidden">
+                            <a href="javascript:;" class="block p-0 text-sm text-white transition-all ease-in" sidenav-trigger>
+                                <div class="w-4.5 overflow-hidden">
+                                    <i class="ease-in mb-0.75 relative block h-0.5 rounded-sm bg-white transition-all"></i>
+                                    <i class="ease-in mb-0.75 relative block h-0.5 rounded-sm bg-white transition-all"></i>
+                                    <i class="ease-in relative block h-0.5 rounded-sm bg-white transition-all"></i>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- End Navbar -->
 
-  </head>
+        <!-- Main Content -->
+        <div class="w-full px-6 py-6 mx-auto">
+            <!-- Messages -->
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                <div class="border-black/12.5 dark:bg-slate-850 dark:shadow-dark-xl shadow-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border p-4">
+                    <div class="bg-{{ message.tags }}-100 border border-{{ message.tags }}-400 text-{{ message.tags }}-700 px-4 py-3 rounded relative" role="alert">
+                        <span class="block sm:inline">{{ message }}</span>
+                        <button type="button" class="absolute top-0 right-0 p-4 opacity-50 cursor-pointer fas fa-times dark:text-white text-slate-400" data-dismiss="alert"></button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
-  <body>
-    <div class="container-scroller">
-      {% include 'admin/sidebar.html' %}
-      <div class="container-fluid page-body-wrapper">
-        {% include 'admin/navbar.html' %}
-        <div class="main-panel">
-          <div class="content-wrapper">
             <!-- Create New Coupon Button -->
             <div class="mb-4">
-              <button class="btn btn-success" data-toggle="modal" data-target="#createCouponModal">
-                + Create New Coupon
-              </button>
+                <button class="create-btn" data-toggle="modal" data-target="#createCouponModal">+ Create New Coupon</button>
             </div>
 
-            <!-- Modal for creating new coupon -->
-            <div class="modal fade" id="createCouponModal" tabindex="-1" role="dialog" aria-labelledby="createCouponModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="createCouponModalLabel">Create New Coupon</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <!-- Form for creating new coupon -->
-                    <form method="POST" action="{% url 'coupon_add' %}">
-                      {% csrf_token %}
-                      <div class="form-group">
-                        <label for="code">Coupon Code</label>
-                        <input type="text" class="form-control" id="code" name="code" value="{{ data.code|default_if_none:'' }}" maxlength="30" required>
-                      </div>
-                      <div class="form-group">
-                        <label for="discount_type">Discount Type</label>
-                        <!-- Dropdown for discount type -->
-                        <select class="form-control" id="discount_type" name="discount_type" required>
-                          <option value="" disabled selected>Select Discount Type</option>
-                          <option value="percentage" {% if data.discount_type == "percentage" %}selected{% endif %} >Percentage</option>
-                          <option value="fixed" {% if data.discount_type == "fixed" %}selected{% endif %} >Fixed Amount</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label for="discount_amount" id="discount_label">Discount Value</label>
-                        <!-- Updated discount_amount input to dynamically update -->
-                        <input type="number" step="0.01" class="form-control" id="discount_amount" name="discount_amount" value="{{ data.discount_amount|default_if_none:'' }}" max="9999999999" placeholder="Enter value" required>
-                      </div>
-
-
-                      <div class="form-group">
-                        <label for="min_purchase_amount">Minimum Purchase Amount</label>
-                        <input type="number" step="0.01" class="form-control" id="min_purchase_amount" name="min_purchase_amount" value="{{ data.min_purchase_amount|default_if_none:'' }}" required>
-                      </div>
-                      
-                      <div class="form-group">
-                        <label for="usage_limit">Usage Limit</label>
-                        <input type="number" class="form-control" id="usage_limit" name="usage_limit" value="{{ data.usage_limit|default_if_none:'' }}" min="1" required>
-                      </div>
-                      
-
-
-
-                      <div class="form-group">
-                        <label for="valid_until">Valid Until</label>
-                        <input type="text" class="form-control datepicker" id="valid_until" name="valid_until" value="{{ data.valid_until|default_if_none:'' }}">
-                      </div>
-                      <div class="form-group">
-                        <label for="active">Active</label>
-                        <input type="checkbox" id="active" name="active" {% if data.active == "on" %}checked{% endif %}>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Create Coupon</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {% if messages %}
-    <div>
-
-        {% for message in messages %}
-            <div class="{% if message.tags %}{{ message.tags }}-message{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
-
-
-            <!-- Existing Coupons Table -->
-            <div class="row">
-              <div class="col-12 grid-margin">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Coupon Details</h4>
-                    <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th>ID</th>
-                            <th>Code</th>
-                            <th>Discount</th>
-                            <th>Discount Type</th>
-                            <th>Min Purchase</th>
-                            <th>Limit</th>
-                            <th>Active</th>
-                            <th>Created At</th>
-                            <th>Valid Until</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {% for coupon in coupons %}
-                          <tr>
-                            <td>{{ coupon.id }}</td>
-                            <td>{{ coupon.code }}</td>
-                            <td>
-                              {% if coupon.discount_type == "percentage" %}
-                                {{ coupon.discount_amount|floatformat:2 }}%
-                              {% else %}
-                              ₹ {{ coupon.discount_amount }}
-                              {% endif %}
-                            </td>
-                            <td>{{ coupon.discount_type }}</td>
-                            <td>{{ coupon.min_purchase_amount }}</td>
-                            <td>{{ coupon.usage_limit }}</td>
-                            <td>{{ coupon.active|yesno:"Yes,No" }}</td>
-                            <td>{{ coupon.created_at }}</td>
-                            <td>{{ coupon.valid_until }}</td>
-                            <td>
-                              <a href="{% url 'coupon_edit' coupon.id %}" class="btn btn-primary">Edit</a>
-                              <a href="{% url 'coupon_delete' coupon.id %}" class="btn btn-danger">Delete</a>
-                            </td>
-                          </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
+            <!-- Coupon Table -->
+            <div class="flex flex-wrap mt-6 -mx-3">
+                <div class="w-full max-w-full px-3 mt-0 lg:flex-none">
+                    <div class="border-black/12.5 dark:bg-slate-850 dark:shadow-dark-xl shadow-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
+                        <div class="border-black/12.5 mb-0 rounded-t-2xl border-b-0 border-solid p-6 pt-4 pb-0">
+                            <h6 class="capitalize dark:text-white">Coupon Details</h6>
+                        </div>
+                        <div class="flex-auto p-4">
+                            <div class="overflow-x-auto">
+                                <table class="items-center w-full mb-4 align-top border-collapse border-gray-200 dark:border-white/40 table">
+                                    <thead>
+                                        <tr>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">ID</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Code</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Discount</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Discount Type</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Min Purchase</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Limit</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Active</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Created At</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Valid Until</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for coupon in coupons %}
+                                        <tr>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ coupon.id }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ coupon.code }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                                                {% if coupon.discount_type == "percentage" %}
+                                                    {{ coupon.discount_amount|floatformat:2 }}%
+                                                {% else %}
+                                                    ₹ {{ coupon.discount_amount }}
+                                                {% endif %}
+                                            </td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ coupon.discount_type }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ coupon.min_purchase_amount }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ coupon.usage_limit }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ coupon.active|yesno:"Yes,No" }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ coupon.created_at }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ coupon.valid_until }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                                                <a href="{% url 'coupon_edit' coupon.id %}" class="edit-btn">Edit</a>
+                                                <a href="{% url 'coupon_delete' coupon.id %}" class="delete-btn">Delete</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td class="p-2 align-middle bg-transparent border-0 whitespace-nowrap" colspan="10">No coupons found.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
             </div>
-          </div>
+
+            <!-- Pagination Controls -->
+            <div class="pagination-container mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if coupons.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ coupons.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% for num in coupons.paginator.page_range %}
+                        <li class="page-item {% if coupons.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endfor %}
+                        {% if coupons.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ coupons.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Create New Coupon Modal -->
+            <div class="modal fade" id="createCouponModal" tabindex="-1" role="dialog" aria-labelledby="createCouponModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createCouponModalLabel">Create New Coupon</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" action="{% url 'coupon_add' %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="code">Coupon Code</label>
+                                    <input type="text" class="form-control" id="code" name="code" value="{{ data.code|default_if_none:'' }}" maxlength="30" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="discount_type">Discount Type</label>
+                                    <select class="form-control" id="discount_type" name="discount_type" required>
+                                        <option value="" disabled selected>Select Discount Type</option>
+                                        <option value="percentage" {% if data.discount_type == "percentage" %}selected{% endif %}>Percentage</option>
+                                        <option value="fixed" {% if data.discount_type == "fixed" %}selected{% endif %}>Fixed Amount</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="discount_amount" id="discount_label">Discount Value</label>
+                                    <input type="number" step="0.01" class="form-control" id="discount_amount" name="discount_amount" value="{{ data.discount_amount|default_if_none:'' }}" max="9999999999" placeholder="Enter value" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="min_purchase_amount">Minimum Purchase Amount</label>
+                                    <input type="number" step="0.01" class="form-control" id="min_purchase_amount" name="min_purchase_amount" value="{{ data.min_purchase_amount|default_if_none:'' }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usage_limit">Usage Limit</label>
+                                    <input type="number" class="form-control" id="usage_limit" name="usage_limit" value="{{ data.usage_limit|default_if_none:'' }}" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="valid_until">Valid Until</label>
+                                    <input type="text" class="form-control datepicker" id="valid_until" name="valid_until" value="{{ data.valid_until|default_if_none:'' }}" placeholder="Select date">
+                                </div>
+                                <div class="form-group">
+                                    <label for="active">Active</label>
+                                    <input type="checkbox" id="active" name="active" {% if data.active == "on" %}checked{% endif %}>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Create Coupon</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Create New Coupon Modal -->
         </div>
-      </div>
-    </div>
+
+        <footer class="pt-4">
+            <div class="w-full px-6 mx-auto">
+                <div class="flex flex-wrap items-center -mx-3 lg:justify-between">
+                    <div class="w-full max-w-full px-3 mt-0 mb-6 shrink-0 lg:mb-0 lg:w-1/2 lg:flex-none">
+                        <div class="text-sm leading-normal text-center text-slate-500 lg:text-left">
+                            © <script>document.write(new Date().getFullYear() + ",");</script>
+                            made with <i class="fa fa-heart"></i> by
+                            <a href="https://www.creative-tim.com" class="font-semibold text-slate-700 dark:text-white" target="_blank">Creative Tim</a>
+                            for a better web.
+                        </div>
+                    </div>
+                    <div class="w-full max-w-full px-3 mt-0 shrink-0 lg:w-1/2 lg:flex-none">
+                        <ul class="flex flex-wrap justify-center pl-0 mb-0 list-none lg:justify-end">
+                            <li class="nav-item">
+                                <a href="https://www.creative-tim.com" class="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-in text-slate-500" target="_blank">Creative Tim</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://www.creative-tim.com/presentation" class="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-in text-slate-500" target="_blank">About Us</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://creative-tim.com/blog" class="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-in text-slate-500" target="_blank">Blog</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://www.creative-tim.com/license" class="block px-4 pt-0 pb-1 pr-0 text-sm font-normal transition-colors ease-in text-slate-500" target="_blank">License</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
 
     <!-- Scripts -->
+    <script src="{% static 'admin/assets/js/plugins/perfect-scrollbar.min.js' %}" async></script>
+    <script src="{% static 'admin/assets/js/argon-dashboard-tailwind.js' %}" async></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Datepicker JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <!-- Custom JS -->
     <script>
-  $(document).ready(function() {
-    // Existing code...
+        $(document).ready(function() {
+            // Initialize datepicker with enhanced options
+            $('#valid_until').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true,
+                startDate: '0d', // Prevent selecting past dates
+                orientation: 'bottom auto',
+                zIndexOffset: 1000, // Ensure datepicker appears above modal
+                container: '#createCouponModal' // Attach to modal for proper positioning
+            }).on('changeDate', function(e) {
+                // Update input value on date selection
+                $(this).val(e.format('yyyy-mm-dd'));
+            });
 
-    // Confirmation dialog for delete action
-    $('.btn-danger').on('click', function(e) {
-      e.preventDefault(); // Prevent the default action
-      const deleteUrl = $(this).attr('href'); // Get the URL from the link
+            // Delete confirmation
+            $('.delete-btn').on('click', function(e) {
+                e.preventDefault();
+                const deleteUrl = $(this).attr('href');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
 
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = deleteUrl; // Redirect to the delete URL
-        }
-      });
-    });
-  });
-</script>
-
-  </body>
+            // Form error handling
+            {% if form.errors %}
+            Swal.fire({
+                icon: 'error',
+                title: 'Form Errors',
+                html: '{% for field, errors in form.errors.items %}<p>{{ field|capfirst }}: {{ errors|join:", " }}</p>{% endfor %}',
+                confirmButtonText: 'OK'
+            });
+            {% endif %}
+        });
+    </script>
+</body>
 </html>
-
-
-
-
-

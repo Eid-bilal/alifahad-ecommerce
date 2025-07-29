@@ -1,283 +1,396 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Corona Admin</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
-    <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="{% static 'admin/vendors/jvectormap/jquery-jvectormap.css' %}">
-    <link rel="stylesheet" href="{% static 'admin/vendors/flag-icon-css/css/flag-icon.min.css' %}">
-    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.css' %}">
-    <link rel="stylesheet" href="{% static 'admin/vendors/owl-carousel-2/owl.theme.default.min.css' %}">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
-    <!-- End layout styles -->
-    <link rel="shortcut icon" href="{% static 'admin/images/favicon.png '%}" />
-
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'img/apple-icon.png' %}" />
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}" />
+    <title>Order Management - Argon Dashboard</title>
+    <!-- Fonts and icons -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Nucleo Icons -->
+    <link href="{% static 'admin/assets/css/nucleo-icons.css' %}" rel="stylesheet" />
+    <link href="{% static 'admin/assets/css/nucleo-svg.css' %}" rel="stylesheet" />
+    <!-- Popper -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <!-- Main Styling -->
+    <link href="{% static 'admin/assets/css/argon-dashboard-tailwind.css' %}" rel="stylesheet" />
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
-      /* Style for paginator buttons */
-      .pagination .page-link {
-          border: 2px solid #ffffff; /* White border for the buttons */
-          color: #ffffff; /* White text color */
-          background-color: transparent; /* Transparent background */
-      }
-  
-      /* Hover effect for paginator buttons */
-      .pagination .page-link:hover {
-          background-color: #ffffff; /* White background on hover */
-          color: #333333; /* Dark text color on hover */
-          border-color: #ffffff; /* Keep the white border */
-      }
-  
-      .pagination .active .page-link {
-          background-color: #ffffff; /* White background for active page */
-          color: #333333; /* Dark text for active page */
-          border-color: #ffffff; /* Keep the white border */
-      }
-      .content-wrapper {
-    background: #f9f9f9;
-    padding: 1.875rem 1.75rem;
-    width: 100%;
-    -webkit-flex-grow: 1;
-    flex-grow: 1;
-}
-.card-body {
-    background-color: #ffffff;
-}
-  </style>
-  <style>
-      body {
-          background-color: #f8f9fa; /* Light background for better contrast */
-          color: #212529; /* Standard text color */
-          font-family: 'Arial', sans-serif; /* Standard font */
-      }
-
-      
-
-      h1 {
-          text-align: center;
-          margin-bottom: 2rem;
-          font-weight: 600;
-      }
-
-      .table {
-          width: 100%;
-          margin-bottom: 1rem;
-          color: #212529; /* Standard text color for table */
-      }
-
-      .table th, .table td {
-          padding: 1rem;
-          text-align: center; /* Centering text in table */
-      }
-
-      .table th {
-          background-color: #010e1c; /* Bootstrap primary color */
-          color: white; /* White text for headers */
-      }
-
-      .btn-view {
-          background-color: #0d0f10; /* Bootstrap primary color */
-          color: white;
-          padding: 0.5rem 1rem;
-          border-radius: 4px;
-          text-decoration: none;
-      }
-
-      .btn-view:hover {
-          background-color: #020b14; /* Darker shade on hover */
-      }
-
-      .pagination-container {
-          margin-top: 2rem;
-          text-align: center;
-      }
+        /* Button styling */
+        .view-btn {
+            background: linear-gradient(to top left, #10b981, #34d399);
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 0.5rem;
+            transition: all 0.15s ease-in;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        .view-btn:hover {
+            background: linear-gradient(to top left, #059669, #22c55e);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .search-btn {
+            background: linear-gradient(to top left, #10b981, #34d399);
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 0.5rem;
+            transition: all 0.15s ease-in;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .search-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        /* Enhanced table styling */
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+        }
+        .table th {
+            padding: 1.25rem;
+            background: linear-gradient(to top left, #1e293b, #475569);
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .table td {
+            padding: 1.25rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .table tr:hover {
+            background-color: #e5e7eb;
+            transition: background-color 0.2s ease-in;
+        }
+        .pagination .page-link {
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            background-color: transparent;
+        }
+        .pagination .page-link:hover {
+            background-color: #ffffff;
+            color: #333333;
+            border-color: #ffffff;
+        }
+        .pagination .active .page-link {
+            background-color: #ffffff;
+            color: #333333;
+            border-color: #ffffff;
+        }
     </style>
+</head>
 
-
-  </head>
-  <body>
-    <div class="container-scroller">
-      {% include 'admin/sidebar.html' %}
-      <!-- partial:partials/_sidebar.html -->
-     
-      <!-- partial -->
-      <div class="container-fluid page-body-wrapper">
-        <!-- partial:partials/_navbar.html -->
-        <nav class="navbar p-0 fixed-top d-flex flex-row">
-            <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-                <a class="navbar-brand brand-logo-mini" href="index.html"><img src="" alt="logo" /></a>
+<body class="m-0 font-sans text-base antialiased font-normal dark:bg-slate-900 leading-default bg-gray-50 text-slate-500">
+    <div class="absolute w-full bg-blue-500 dark:hidden min-h-75"></div>
+    <!-- Sidenav -->
+    <aside class="fixed inset-y-0 flex-wrap items-center justify-between block w-full p-0 my-4 overflow-y-auto antialiased transition-transform duration-200 -translate-x-full bg-white border-0 shadow-xl dark:shadow-none dark:bg-slate-850 max-w-64 ease-nav-brand z-990 xl:ml-6 rounded-2xl xl:left-0 xl:translate-x-0" aria-expanded="false">
+        <div class="h-19">
+            <i class="absolute top-0 right-0 p-4 opacity-50 cursor-pointer fas fa-times dark:text-white text-slate-400 xl:hidden" sidenav-close></i>
+            <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap dark:text-white text-slate-700" href="https://demos.creative-tim.com/argon-dashboard-tailwind/pages/dashboard.html" target="_blank">
+                <img src="{% static 'admin/assets/img/logo-ct-dark.png' %}" class="inline h-full max-w-full transition-all duration-200 dark:hidden ease-nav-brand max-h-8" alt="main_logo" />
+                <img src="{% static 'admin/assets/img/logo-ct.png' %}" class="hidden h-full max-w-full transition-all duration-200 dark:inline ease-nav-brand max-h-8" alt="main_logo" />
+                <span class="ml-1 font-semibold transition-all duration-200 ease-nav-brand">Abn perumes</span>
+            </a>
+        </div>
+        <hr class="h-px mt-0 bg-transparent bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent" />
+        <div class="items-center block w-auto max-h-screen overflow-auto h-sidenav grow basis-full">
+            <ul class="flex flex-col pl-0 mb-0">
+                <li class="mt-0.5 w-full">
+                    <a class="py-2.7 dark:text-white dark:opacity-80 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'panel' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-blue-500 ni ni-tv-2"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Dashboard</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'user_management' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-orange-500 ni ni-calendar-grid-58"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Users</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'product_management' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center fill-current stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-emerald-500 ni ni-credit-card"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Product</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'category_management' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-cyan-500 ni ni-app"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Category</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="py-2.7 bg-blue-500/13 dark:text-white dark:opacity-80 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'order:order_management' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-red-600 ni ni-world-2"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Order</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'coupon_list' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-red-600 ni ni-world-2"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Coupon</span>
+                    </a>
+                </li>
+                <li class="w-full mt-4">
+                    <h6 class="pl-6 ml-2 text-xs font-bold leading-tight uppercase dark:text-white opacity-60">Account pages</h6>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="../pages/profile.html">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-slate-700 ni ni-single-02"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Profile</span>
+                    </a>
+                </li>
+                <li class="mt-0.5 w-full">
+                    <a class="dark:text-white dark:opacity-80 py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors" href="{% url 'admin_logout' %}">
+                        <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                            <i class="relative top-0 text-sm leading-normal text-orange-500 ni ni-single-copy-04"></i>
+                        </div>
+                        <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Sign Out</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="mx-4">
+            <div class="relative flex flex-col min-w-0 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border" sidenav-card>
+                <img class="w-1/2 mx-auto" src="{% static 'admin/assets/img/illustrations/icon-documentation.svg' %}" alt="sidebar illustrations" />
+                <div class="flex-auto w-full p-4 pt-0 text-center">
+                    <div class="transition-all duration-200 ease-in">
+                        <h6 class="mb-0 dark:text-white text-slate-700">Need help?</h6>
+                        <p class="mb-0 text-xs font-semibold leading-tight dark:text-white dark:opacity-80">Please check our docs</p>
+                    </div>
+                </div>
             </div>
-            <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
-                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-                    <span class="mdi mdi-menu"></span>
-                </button>
-                <ul class="navbar-nav w-100">
-                    <li class="nav-item w-100">
-                        <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search" method="get" action="{% url 'user_management' %}">
+            <a href="https://www.creative-tim.com/learning-lab/tailwind/html/quick-start/argon-dashboard/" target="_blank" class="inline-block w-full px-8 py-2 mb-4 text-xs font-bold leading-normal text-center text-white capitalize transition-all ease-in rounded-lg shadow-md bg-slate-700 bg-0.15 hover:shadow-lg hover:-translate-y-px">Documentation</a>
+        </div>
+    </aside>
+    <!-- End Sidenav -->
+
+    <main class="relative h-full max-h-screen transition-all duration-200 ease-in-out xl:ml-68 rounded-xl">
+        <!-- Navbar -->
+        <nav class="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all ease-in shadow-none duration-250 rounded-2xl lg:flex-nowrap lg:justify-start" navbar-main navbar-scroll="false">
+            <div class="flex items-center justify-between w-full px-4 py-1 mx-auto flex-wrap-inherit">
+                <nav>
+                    <ol class="flex flex-wrap pt-1 mr-12 bg-transparent rounded-lg sm:mr-16">
+                        <li class="text-sm leading-normal">
+                            <a class="text-white opacity-50" href="javascript:;">Pages</a>
+                        </li>
+                        <li class="text-sm pl-2 capitalize leading-normal text-white before:float-left before:pr-2 before:text-white before:content-['/']" aria-current="page">Order Management</li>
+                    </ol>
+                    <h6 class="mb-0 font-bold text-white capitalize">Order Management</h6>
+                </nav>
+                <div class="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
+                    <div class="flex items-center md:ml-auto md:pr-4">
+                        <form class="relative flex flex-wrap items-stretch w-full transition-all rounded-lg ease-in" method="GET" action="{% url 'order:order_management' %}">
                             {% csrf_token %}
-                            <input 
-                                type="text" 
-                                name="q" 
-                                class="form-control" 
-                                placeholder="Search users"
-                                value="{{ query|default:'' }}"
-                            >
-                            <button type="submit" class="btn btn-primary">Search</button>
+                            <span class="text-sm ease-in leading-5.6 absolute z-50 -ml-px flex h-full items-center whitespace-nowrap rounded-lg rounded-tr-none rounded-br-none border border-r-0 border-transparent bg-transparent py-2 px-2.5 text-center font-normal text-slate-500 transition-all">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" name="q" value="{{ query|default:'' }}" class="pl-9 text-sm focus:shadow-primary-outline ease-in w-1/100 leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-lg border border-solid border-gray-300 dark:bg-slate-850 dark:text-white bg-white bg-clip-padding py-2 pr-3 text-gray-700 transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:transition-shadow" placeholder="Search orders..." />
+                            <button type="submit" class="search-btn ml-2">Search</button>
                         </form>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a href="{% url 'admin_logout' %}" class="nav-link btn btn-primary">
-                            Log out
-                        </a>
-                    </li>
-                </ul>
-                
-                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-                    <span class="mdi mdi-format-line-spacing"></span>
-                </button>
+                    </div>
+                    <ul class="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
+                        <li class="flex items-center">
+                            <a href="{% url 'admin_logout' %}" class="block px-0 py-2 text-sm font-semibold text-white transition-all ease-in">
+                                <i class="fa fa-user sm:mr-1"></i>
+                                <span class="hidden sm:inline">Sign Out</span>
+                            </a>
+                        </li>
+                        <li class="flex items-center pl-4 xl:hidden">
+                            <a href="javascript:;" class="block p-0 text-sm text-white transition-all ease-in" sidenav-trigger>
+                                <div class="w-4.5 overflow-hidden">
+                                    <i class="ease-in mb-0.75 relative block h-0.5 rounded-sm bg-white transition-all"></i>
+                                    <i class="ease-in mb-0.75 relative block h-0.5 rounded-sm bg-white transition-all"></i>
+                                    <i class="ease-in relative block h-0.5 rounded-sm bg-white transition-all"></i>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
-        
-        
-        <!-- partial -->
-        
-        <div class="main-panel">
-          <div class="content-wrapper">
-            {% block content %}
-          
-           <div class="container">
-      <h1>Order Management</h1>
-      <div class="table-responsive">
-          <table class="table table-hover">
-              <thead>
-                  <tr>
-                      <th>Username</th>
-                      <th>Date</th>
-                      <th>Total Amount</th>
-                      <th>Serial Number</th>
-                      <th>Order Status</th>
-                      <th>Payment Status</th>
-                      <th>Payment Method</th>
-                      <th>Action</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {% for order in orders %}
-                  <tr>
-                      <td>{{ order.user_id.username }}</td>
-                      <td>{{ order.order_date|date:"d M, Y" }}</td>
-                      <td>₹{{ order.total_amount }}</td>
-                      <td>{{ order.serial_number }}</td>
-                      <td>{{ order.status }}</td>
-                      <td>{{ order.payment_status }}</td>
-                      <td>{{ order.payment_method }}</td>
-                      <td>
-                          <a href="{% url 'order:order_detail_view' order.serial_number %}" class="btn-view">View</a>
-                      </td>
-                  </tr>
-                  {% endfor %}
-              </tbody>
-          </table>
-      </div>
+        <!-- End Navbar -->
 
-      <!-- Pagination Controls -->
-      <div class="pagination-container">
-          <nav aria-label="Page navigation">
-              <ul class="pagination justify-content-center">
-                  {% if orders.has_previous %}
-                  <li class="page-item">
-                      <a class="page-link" href="?page={{ orders.previous_page_number }}" aria-label="Previous">
-                          <span aria-hidden="true">&laquo;</span>
-                      </a>
-                  </li>
-                  {% endif %}
-
-                  {% for num in orders.paginator.page_range %}
-                  <li class="page-item {% if orders.number == num %}active{% endif %}">
-                      <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                  </li>
-                  {% endfor %}
-
-                  {% if orders.has_next %}
-                  <li class="page-item">
-                      <a class="page-link" href="?page={{ orders.next_page_number }}" aria-label="Next">
-                          <span aria-hidden="true">&raquo;</span>
-                      </a>
-                  </li>
-                  {% endif %}
-              </ul>
-          </nav>
-      </div>
-    </div>
-
-            
-        
-          
-          <!-- partial:partials/_footer.html -->
-          <!-- <footer class="footer">
-            <div class="d-sm-flex justify-content-center justify-content-sm-between">
-              <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
-              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
+        <!-- Main Content -->
+        <div class="w-full px-6 py-6 mx-auto">
+            <!-- Messages -->
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                <div class="border-black/12.5 dark:bg-slate-850 dark:shadow-dark-xl shadow-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border p-4">
+                    <div class="bg-{{ message.tags }}-100 border border-{{ message.tags }}-400 text-{{ message.tags }}-700 px-4 py-3 rounded relative" role="alert">
+                        <span class="block sm:inline">{{ message }}</span>
+                        <button type="button" class="absolute top-0 right-0 p-4 opacity-50 cursor-pointer fas fa-times dark:text-white text-slate-400" data-dismiss="alert"></button>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-          </footer> -->
-          <!-- partial -->
-        </div>
-        <!-- main-panel ends -->
-      </div>
-      {% endblock %}
-      <!-- page-body-wrapper ends -->
-    </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <!-- endinject -->
-    <!-- End custom js for this page -->
-    <!-- Custom js for this page -->
-    {% if errors %}
-    <script>
-        Swal.fire({
-            title: 'Error!',
-            html: `{% for field, error_list in errors.items %}
-            {{ error_list|join:', ' }}<br>
-            {% endfor %}`,
-            icon: 'error',
-            confirmButtonText: 'OK'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                clearFormAndHideModal('createCategoryModal', 'createCategoryForm');
-            }
-        });
-        </script>
-    {% endif %}
-    <script src="{% static 'admin/vendors/js/vendor.bundle.base.js' %}"></script>
-    <script src="{% static 'admin/vendors/chart.js/Chart.min.js' %}"></script>
-    <script src="{% static 'admin/vendors/progressbar.js/progressbar.min.js' %}"></script>
-    <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap.min.js' %}"></script>
-    <script src="{% static 'admin/vendors/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
-    <script src="{% static 'admin/vendors/owl-carousel-2/owl.carousel.min.js' %}"></script>
-    <script src="{% static 'admin/js/off-canvas.js' %}"></script>
-    <script src="{% static 'admin/js/hoverable-collapse.js' %}"></script>
-    <script src="{% static 'admin/js/misc.js' %}"></script>
-    <script src="{% static 'admin/js/settings.js' %}"></script>
-    <script src="{% static 'admin/js/todolist.js' %}"></script>
-    <script src="{% static 'admin/js/dashboard.js' %}"></script>
-    <script src="{% static 'admin/vendors/js/vendor.bundle.base.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+            {% endif %}
 
+            <!-- Order Table -->
+            <div class="flex flex-wrap mt-6 -mx-3">
+                <div class="w-full max-w-full px-3 mt-0 lg:flex-none">
+                    <div class="border-black/12.5 dark:bg-slate-850 dark:shadow-dark-xl shadow-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
+                        <div class="border-black/12.5 mb-0 rounded-t-2xl border-b-0 border-solid p-6 pt-4 pb-0">
+                            <h6 class="capitalize dark:text-white">Order Details</h6>
+                        </div>
+                        <div class="flex-auto p-4">
+                            <div class="overflow-x-auto">
+                                <table class="items-center w-full mb-4 align-top border-collapse border-gray-200 dark:border-white/40 table">
+                                    <thead>
+                                        <tr>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Username</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Date</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Total Amount</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Serial Number</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Order Status</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Payment Status</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Payment Method</th>
+                                            <th class="p-2 text-sm font-semibold leading-normal uppercase dark:text-white dark:opacity-80">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in orders %}
+                                        <tr>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ order.user_id.username }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ order.order_date|date:"d M, Y" }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">₹{{ order.total_amount }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ order.serial_number }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ order.status }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ order.payment_status }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">{{ order.payment_method }}</td>
+                                            <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap dark:border-white/40">
+                                                <a href="{% url 'order:order_detail_view' order.serial_number %}" class="view-btn">View</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td class="p-2 align-middle bg-transparent border-0 whitespace-nowrap" colspan="8">No orders found.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="pagination-container mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if orders.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ orders.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% for num in orders.paginator.page_range %}
+                        <li class="page-item {% if orders.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endfor %}
+                        {% if orders.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ orders.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <footer class="pt-4">
+            <div class="w-full px-6 mx-auto">
+                <div class="flex flex-wrap items-center -mx-3 lg:justify-between">
+                    <div class="w-full max-w-full px-3 mt-0 mb-6 shrink-0 lg:mb-0 lg:w-1/2 lg:flex-none">
+                        <div class="text-sm leading-normal text-center text-slate-500 lg:text-left">
+                            © <script>document.write(new Date().getFullYear() + ",");</script>
+                            made with <i class="fa fa-heart"></i> by
+                            <a href="https://www.creative-tim.com" class="font-semibold text-slate-700 dark:text-white" target="_blank">Creative Tim</a>
+                            for a better web.
+                        </div>
+                    </div>
+                    <div class="w-full max-w-full px-3 mt-0 shrink-0 lg:w-1/2 lg:flex-none">
+                        <ul class="flex flex-wrap justify-center pl-0 mb-0 list-none lg:justify-end">
+                            <li class="nav-item">
+                                <a href="https://www.creative-tim.com" class="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-in text-slate-500" target="_blank">Creative Tim</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://www.creative-tim.com/presentation" class="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-in text-slate-500" target="_blank">About Us</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://creative-tim.com/blog" class="block px-4 pt-0 pb-1 text-sm font-normal transition-colors ease-in text-slate-500" target="_blank">Blog</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://www.creative-tim.com/license" class="block px-4 pt-0 pb-1 pr-0 text-sm font-normal transition-colors ease-in text-slate-500" target="_blank">License</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Scripts -->
+    <script src="{% static 'admin/assets/js/plugins/perfect-scrollbar.min.js' %}" async></script>
+    <script src="{% static 'admin/assets/js/argon-dashboard-tailwind.js' %}" async></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Bootstrap JS (for modals, included for consistency) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS for error handling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if errors %}
+            Swal.fire({
+                icon: 'error',
+                title: 'Errors',
+                html: '{% for field, error_list in errors.items %}<p>{{ field|capfirst }}: {{ error_list|join:", " }}</p>{% endfor %}',
+                confirmButtonText: 'OK'
+            });
+            {% endif %}
+        });
+    </script>
+</body>
 </html>
